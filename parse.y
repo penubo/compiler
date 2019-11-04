@@ -1,4 +1,4 @@
-A3 Yacc Specification: parse.y
+// A3 Yacc Specification: parse.y
 %{
 #include "type.h"
 extern int line_no, syntax_err;
@@ -177,10 +177,11 @@ enum_type_specifier
     : ENUM_SYM IDENTIFIER
     {$$=setTypeStructOrEnumIdentifier(T_ENUM,$2,ID_ENUM);}
     LR enumerator_list RR
-    | ENUM_SYM
     {$$=setTypeField($3,$5);}
+    | ENUM_SYM
     {$$=makeType(T_ENUM);}
-    LR enumerator_list RR {$$=setTypeField($2,$4);}
+    LR enumerator_list RR 
+    {$$=setTypeField($2,$4);}
     | ENUM_SYM IDENTIFIER
     {$$=getTypeOfStructOrEnumRefIdentifier(T_ENUM,$2,ID_ENUM);}
     ;

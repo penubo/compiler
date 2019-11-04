@@ -1,4 +1,4 @@
-// A2 Lex Specification: scan.l
+/* A2 Lex Specification: scan.l */
 
 digit       [0-9]
 letter      [a-zA-Z_]
