@@ -33,7 +33,6 @@ A_ID *setDeclaratorElementType(A_ID *,A_TYPE *);
 A_ID *setDeclaratorTypeAndKind(A_ID *,A_TYPE *,ID_KIND);
 A_ID *setDeclaratorListSpecifier(A_ID *,A_SPECIFIER *);
 A_ID *setFunctionDeclaratorSpecifier(A_ID *, A_SPECIFIER *);
-
 A_ID *setFunctionDeclaratorBody(A_ID *, A_NODE *);
 A_ID *setParameterDeclaratorSpecifier(A_ID *, A_SPECIFIER *);
 A_ID *setStructDeclaratorListSpecifier(A_ID *, A_TYPE *);
@@ -42,12 +41,13 @@ A_TYPE *setTypeElementType(A_TYPE *, A_TYPE *);
 A_TYPE *setTypeField(A_TYPE *, A_ID *);
 A_TYPE *setTypeExpr(A_TYPE *, A_NODE *);
 A_TYPE *setTypeAndKindOfDeclarator(A_TYPE *, ID_KIND, A_ID *);
-A_TYPE *setTypeStructOrEnumIdentifier(A_ID *, A_ID *);
+A_TYPE *setTypeStructOrEnumIdentifier(T_KIND, char *, ID_KIND);
 BOOLEAN isNotSameFormalParameters(A_ID *, A_ID *); 
 BOOLEAN isNotSameType(A_TYPE *, A_TYPE *); 
 BOOLEAN isPointerOrArrayType(A_TYPE *);
 void syntax_error();
 void initialize();
+
 // make new node for syntax tree
 A_NODE *makeNode(NODE_NAME n, A_NODE *a, A_NODE *b, A_NODE *c)
 {
@@ -65,22 +65,23 @@ A_NODE *makeNode(NODE_NAME n, A_NODE *a, A_NODE *b, A_NODE *c)
 
 A_NODE *makeNodeList(NODE_NAME n, A_NODE *a, A_NODE *b)
 {
-    // 리스트 형태의 신택스 트리 마지막에 신택스 트리 b를 추가 연결 A_NODE *m,*k;
+    // 리스트 형태의 신택스 트리 마지막에 신택스 트리 b를 추가 연결 
+
+    A_NODE *m,*k;
     k = a;
     while (k->rlink)
         k = k->rlink;
     m = (A_NODE *)malloc(sizeof(A_NODE));
-    // TODO: m->name, k->name, k->llink, k->rlink
-    m->name = ? ? ? ;
+    m->name = k->name;
     m->llink = NIL;
     m->clink = NIL;
     m->rlink = NIL;
     m->type = NIL;
     m->line = line_no;
     m->value = 0;
-    k->name = ? ? ? ;
-    k->llink = ? ? ?;
-    k->rlink = ? ? ? ;
+    k->name = n;
+    k->llink = b;
+    k->rlink = m;
     return (a);
 }
 // make a new declarator for identifier
@@ -149,7 +150,12 @@ A_SPECIFIER *makeSpecifier(A_TYPE *t, S_KIND s)
 
 A_ID *searchIdentifier(char *s, A_ID *id)
 {
-    // TODO: 명칭 목록 id 에서 명칭 s 를 탐색 //
+    while (id) {
+        if (strcmp(id->name, s) == 0) {
+            break;
+        }
+        id = id->prev;
+    }
     return (id);
 }
 
@@ -158,11 +164,14 @@ A_ID *searchIdentifierAtCurrentLevel(char *s, A_ID *id)
     // TODO: 명칭 목록 id 에서 현재 level 과 같은 level에 명칭 s 가 있는지를 탐색
     while (id)
     {
-        //
-        //
+        if (id->level < current_level)
+            return (NIL);
+        if (strcmp(id->name, s) == 0) 
+            break;
         id = id->prev;
-        return (id);
+        
     }
+    return (id);
 }
 
 void checkForwardReference()
@@ -174,8 +183,21 @@ void checkForwardReference()
     // 현재의 level에서 이름의 종류가 정해지지 않았거나 
     // 미완성 구조체 선언이 있는지 검사
     while (id)
-    { //
-        //
+    { 
+        if (id->level < current_level)
+            break;
+        
+        if (id->kind == ID_NULL) {
+            syntax_error(31, id->name);
+        }
+        
+        if (id->kind == ID_STRUCT || id->kind == ID_ENUM) {
+            t = id->type;
+            if (t->field == NIL) {
+                syntax_error(32, id->name);
+            }
+        }
+
         id = id->prev;
     }
 }
@@ -186,17 +208,24 @@ void setDefaultSpecifier(A_SPECIFIER *p)
     // TODO: setDefaultSpecifier
     // 정해지지 않은 specifier p의 타입과 storage_class를 각각 int 타입과 auto
     // 로 지정한다 //
+
+    if (p->type == NIL) 
+        p->type = int_type;
+    if (p->stor == NIL)
+        p->stor = S_AUTO;
+
 }
 
 // merge & update specifier
 A_SPECIFIER *updateSpecifier(A_SPECIFIER *p, A_TYPE *t, S_KIND s)
 {
+    // TODO: how to get long long in here. I think it will arise error
     if (t)
         if (p->type)
             if (p->type == t) 
                 ;
             else
-                syntax_error(24);
+                syntax_error(24, NULL);
         else
             p->type = t;
     if (s) {
@@ -204,7 +233,7 @@ A_SPECIFIER *updateSpecifier(A_SPECIFIER *p, A_TYPE *t, S_KIND s)
             if (s == p->stor)
                 ;
             else
-                syntax_error(24);
+                syntax_error(24, NULL);
         else
             p->stor = s;
     }
@@ -215,8 +244,19 @@ A_ID *linkDeclaratorList(A_ID *id1, A_ID *id2)
 {
     // TODO: linkDeclaratorList
     // 심볼테이블 목록 id1 뒤에 목록 id2를 연결한다 //
-    //
-    //
+    A_ID *id;
+
+    id = id1;
+
+    if (id == NIL) {
+        return (id2);
+    }
+
+    while (id->link) {
+        id = id->link;
+    }
+
+    id->link = id2;
     return (id1);
 }
 
@@ -236,10 +276,11 @@ A_TYPE *getTypeOfStructOrEnumRefIdentifier(T_KIND k, char *s, ID_KIND kk)
     A_TYPE *t;
     A_ID *id;
     id = searchIdentifier(s, current_id);
-    if (id)
+    if (id && id->kind == kk) {
         // struct 혹은 enum 으로 정의된 이름인지 검사하고 
         // 그 타입(테이블 포인터)를 리턴한다
         return (id->type);
+    }
     // make a new struct (or enum) identifier
     t = makeType(k);
     id = makeIdentifier(s);
@@ -257,10 +298,17 @@ A_ID *setDeclaratorInit(A_ID *id, A_NODE *n)
 A_ID *setDeclaratorKind(A_ID *id, ID_KIND k)
 {
     A_ID *a;
+    
+    a = searchIdentifierAtCurrentLevel(id->name, id->prev);
+
+    if (a) {
+        syntax_error(12, a->name);
+    }
     // enum의 명칭상수 혹은 파라미터 명칭으로 선언된 declarator 명칭이 중복 
     // 선언되었는지 검사하고 그 명칭의 종류를 k 로 결정
     //
     //
+    id->kind = k;
     return (id);
 }
 
@@ -279,7 +327,11 @@ A_ID *setDeclaratorElementType(A_ID *id, A_TYPE *t)
         id->type = t;
     else
     {
-        // ... ...??? 
+        tt = id->type;
+        while (tt->element_type) {
+            tt = tt->element_type;
+        }
+        tt->element_type = t;
     }
     return (id);
 }
@@ -293,13 +345,38 @@ A_ID *setDeclaratorTypeAndKind(A_ID *id, A_TYPE *t, ID_KIND k)
 // check function declarator and return type
 A_ID *setFunctionDeclaratorSpecifier(A_ID *id, A_SPECIFIER *p)
 {
+    // TODO: setFunctionDeclaratorSpecifier
     A_ID *a;
     // storage class 검사
     // specifier 가 생략된 경우 보정
+    // TODO: why
+    if (p->stor)
+        syntax_error(25, NULL);
+    id->specifier = p->stor;
+
     // check function identifier immediately before '('
-    // 함수의 리턴 타입을 완성하고 명칭의 종류를 ID_FUNC 로 지정한다 
+    if (id->type->kind != T_FUNC) {
+        syntax_error(21, NULL);
+        return (id);
+    } else {
+        // 함수의 리턴 타입을 완성하고 명칭의 종류를 ID_FUNC 로 지정한다
+        setDeclaratorTypeAndKind(id, p->type, ID_FUNC);
+    }
+
     // 함수명칭으로 중복선언 검사
     // 프로토타입이 있는경우 파라미터와 리턴 타입등 검사
+    a = searchIdentifier(id->name, id->prev);
+    // TODO: setFunctionDeclaratorSpecifier duplicate name error
+    if (a) {
+        if (a->kind == ID_FUNC && a->type->expr == NIL) {
+            if (isNotSameFormalParameters(a->type->field, id->type->field))
+                syntax_error(22, id->name);
+            if (isNotSameType(a->type->element_type, id->type->element_type))
+                syntax_error(26, a->name);
+        } else {
+            syntax_error(12, id->name);
+        }
+    }
     // 파라미터를 함수 내에서 사용할수 있게 스코프 조정
     return (id);
 }
