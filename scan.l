@@ -76,6 +76,11 @@ while               { return(WHILE_SYM); }
 "//"[^\n]*                      { }
 
 %%
+
+int yywrap(void) {
+    return 1;
+}
+
 char *makeString(char *s) {
     char *t; 
     t=malloc(strlen(s)+1); 

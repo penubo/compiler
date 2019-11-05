@@ -2103,6 +2103,11 @@ void yyfree (void * ptr )
 #line 78 "scan.l"
 
 
+
+int yywrap(void) {
+    return 1;
+}
+
 char *makeString(char *s) {
     char *t; 
     t=malloc(strlen(s)+1); 
