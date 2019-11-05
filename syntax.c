@@ -97,7 +97,7 @@ A_NODE *makeNodeList(NODE_NAME n, A_NODE *a, A_NODE *b)
 A_ID *makeIdentifier(char *s)
 {
     A_ID *id;
-    id = malloc(sizeof(A_ID));
+    id = (A_ID *) malloc(sizeof(A_ID));
     id->name = s;
     id->kind = 0;
     id->specifier = 0;
@@ -332,6 +332,10 @@ A_ID *setDeclaratorElementType(A_ID *id, A_TYPE *t)
 {
     A_TYPE *tt;
     // 명칭 목록의 마지막 타입으로 t를 연결
+    if (id == NIL || id == NULL) {
+        return (id);
+    }
+
     if (id->type == NIL)
         id->type = t;
     else
@@ -496,6 +500,9 @@ A_TYPE *setTypeElementType(A_TYPE *t, A_TYPE *s)
 // set type field
 A_TYPE *setTypeField(A_TYPE *t, A_ID *n)
 {
+    if (!n) {
+        return (t);
+    }
     t->field = n;
     return (t);
 }

@@ -1,6 +1,7 @@
 // A3 Yacc Specification: parse.y
 %{
 #include "type.h"
+#define YYDEBUG 1
 extern int line_no, syntax_err;
 extern A_NODE *root;
 extern A_ID *current_id;
@@ -8,15 +9,7 @@ extern int current_level;
 extern A_TYPE *int_type;
 %}
 %start program
-%token IDENTIFIER TYPE_IDENTIFIER FLOAT_CONSTANT INTEGER_CONSTANT
-CHARACTER_CONSTANT STRING_LITERAL PLUS MINUS PLUSPLUS
-MINUSMINUS BAR AMP BARBAR AMPAMP ARROW
-SEMICOLON LSS GTR LEQ GEQ EQL NEQ DOTDOTDOT
-LP RP LB RB LR RR PERIOD COMMA EXCL STAR SLASH PERCENT ASSIGN
-COLON AUTO_SYM STATIC_SYM TYPEDEF_SYM
-STRUCT_SYM ENUM_SYM SIZEOF_SYM UNION_SYM
-IF_SYM ELSE_SYM WHILE_SYM DO_SYM FOR_SYM CONTINUE_SYM
-BREAK_SYM RETURN_SYM SWITCH_SYM CASE_SYM DEFAULT_SYM
+%token IDENTIFIER TYPE_IDENTIFIER FLOAT_CONSTANT INTEGER_CONSTANT CHARACTER_CONSTANT STRING_LITERAL PLUS MINUS PLUSPLUS MINUSMINUS BAR AMP BARBAR AMPAMP ARROW SEMICOLON LSS GTR LEQ GEQ EQL NEQ DOTDOTDOT LP RP LB RB LR RR PERIOD COMMA EXCL STAR SLASH PERCENT ASSIGN COLON AUTO_SYM STATIC_SYM TYPEDEF_SYM STRUCT_SYM ENUM_SYM SIZEOF_SYM UNION_SYM IF_SYM ELSE_SYM WHILE_SYM DO_SYM FOR_SYM CONTINUE_SYM BREAK_SYM RETURN_SYM SWITCH_SYM CASE_SYM DEFAULT_SYM
 
 %%
 
@@ -40,10 +33,8 @@ external_declaration
     ;
 
 function_definition
-    : declaration_specifiers declarator {$$=setFunctionDeclaratorSpecifier($2,$1);}
-    compound_statement {$$=setFunctionDeclaratorBody($3,$4);current_id=$2;}
-    | declarator {$$=setFunctionDeclaratorSpecifier($1,makeSpecifier(int_type,0));}
-    compound_statement {$$=setFunctionDeclaratorBody($2,$3);current_id=$1;}
+    : declaration_specifiers declarator {$$=setFunctionDeclaratorSpecifier($2,$1);} compound_statement {$$=setFunctionDeclaratorBody($3,$4);current_id=$2;}
+    | declarator {$$=setFunctionDeclaratorSpecifier($1,makeSpecifier(int_type,0));} compound_statement {$$=setFunctionDeclaratorBody($2,$3);current_id=$1;}
     ;
 
 declaration_list_opt
@@ -120,12 +111,9 @@ initializer_list
     ;
 
 type_specifier
-    : struct_type_specifier
-    {$$ = $1;}
-    | enum_type_specifier
-    {$$ = $1;}
-    | TYPE_IDENTIFIER
-    {$$ = $1;}
+    : struct_type_specifier {$$ = $1;}
+    | enum_type_specifier {$$ = $1;}
+    | TYPE_IDENTIFIER {$$ = $1;}
     ;
 
 struct_type_specifier

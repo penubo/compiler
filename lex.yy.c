@@ -2116,6 +2116,24 @@ char *makeString(char *s) {
 }
 
 int checkIdentifier(char *s) {
+    A_ID *id;
+    char *t;
+    id = current_id;
+    while (id) {
+        if (strcmp(id->name, s) == 0)
+            break;
+        id = id->prev;
+    }
+    if (id == NULL) {
+        yylval = makeString(s);
+        return (IDENTIFIER);
+    } else if (id->kind == ID_TYPE) {
+        yylval = id->type;
+        return (TYPE_IDENTIFIER);
+    } else {
+        yylval = id->name;
+        return (IDENTIFIER);
+    }
 // // // // //
 //
 // current_id 로부터 시작하여 파라미터로 주어진 이름(s)을 검색 이름이 없으면 IDENTIFIER 로 결정
