@@ -378,6 +378,14 @@ A_ID *setFunctionDeclaratorSpecifier(A_ID *id, A_SPECIFIER *p)
         }
     }
     // 파라미터를 함수 내에서 사용할수 있게 스코프 조정
+    a = id->type->field;
+    while (a) {
+        if (strlen(a->name))
+            current_id = a;
+        else if (a->type)
+            syntax_error(23, NULL);
+        a = a->link;
+    }
     return (id);
 }
 A_ID *setFunctionDeclaratorBody(A_ID *id, A_NODE *n)
@@ -391,13 +399,26 @@ A_ID *setDeclaratorListSpecifier(A_ID *id, A_SPECIFIER *p)
     A_ID *a;
     setDefaultSpecifier(p);
     a = id;
-    // 중복 선언 검사
-    // 명칭의 타입 완성
-    // 명칭의 종류로 ID_TYPE, ID_FUNC, 및 ID_VAR 등을 구분
     while (a)
     {
-        //...
-        //...
+        // 중복 선언 검사
+        if (strlen(a->name) && searchIdentifierAtCurrentLevel(a->name, a->prev)) {
+            syntax_error(12, a->name);
+        }
+
+        // 명칭의 타입 완성
+        a = setDeclaratorElementType(a, p->type);
+
+        // 명칭의 종류로 ID_TYPE, ID_FUNC, 및 ID_VAR 등을 구분
+        if (p->stor == S_TYPEDEF) {
+            a->kind = ID_TYPE;
+        } else if (a->type->kind == T_FUNC) {
+            a->kind = ID_FUNC;
+        } else {
+            a->kind = ID_VAR;
+        }
+
+        a->specifier = p->stor;
         if (a->specifier == S_NULL)
             a->specifier = S_AUTO;
         a = a->link;
@@ -408,9 +429,17 @@ A_ID *setDeclaratorListSpecifier(A_ID *id, A_SPECIFIER *p)
 A_ID *setParameterDeclaratorSpecifier(A_ID *id, A_SPECIFIER *p)
 {
     // 중복선언 검사
+    if (searchIdentifierAtCurrentLevel(id->name, id->prev))
+        syntax_error(12, id->name);
     // 파라미터의 storage class 와 void type 여부 검사 
+    if (p->stor || p->type == void_type) {
+        syntax_error(14, NULL);
+    }
     // 파라미터의 타입 완성
+    setDefaultSpecifier(p);
+    id = setDeclaratorElementType(id, p->type);
     // 명칭의 종류 결정
+    id->kind = ID_PARM;
     return (id);
 }
 A_ID *setStructDeclaratorListSpecifier(A_ID *id, A_TYPE *t)
@@ -420,9 +449,12 @@ A_ID *setStructDeclaratorListSpecifier(A_ID *id, A_TYPE *t)
     while (a)
     {
         // 구조체 필드 명칭의 중복선언 검사 
+        if (searchIdentifierAtCurrentLevel(a->name, a->prev))
+            syntax_error(12, a->name);
         // 필드명칭의 타입완성
+        a = setTypeElementType(a, t);
         // 명칭의 종류 결정
-        // ...
+        a->kind = ID_FIELD;
         a = a->link;
     }
     return (id);
@@ -432,7 +464,7 @@ A_TYPE *setTypeNameSpecifier(A_TYPE *t, A_SPECIFIER *p)
 {
     // check storage class in type name
     if (p->stor)
-        syntax_error(20);
+        syntax_error(20, NULL);
     setDefaultSpecifier(p);
     t = setTypeElementType(t, p->type);
     return (t);
@@ -441,8 +473,15 @@ A_TYPE *setTypeNameSpecifier(A_TYPE *t, A_SPECIFIER *p)
 A_TYPE *setTypeElementType(A_TYPE *t, A_TYPE *s)
 {
     A_TYPE *q;
+    if (t == NIL)
+        return (s);
     // t 의 마지막 원소의 타입으로 s 타입을 연결 
-    // ...
+    q = t;
+    while (q->element_type) {
+        q = q->element_type;
+    }
+
+    q->element_type = s;
     return (t);
 }
 // set type field
