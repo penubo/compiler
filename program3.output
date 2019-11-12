@@ -1,0 +1,28 @@
+
+start syntax analysis
+======= syntax tree ==========
+N_PROGRAM (0,0)
+| (ID="func") TYPE:571b4750 KIND:FUNC SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | FUNCTION
+| | | | PARAMETER
+| | | | TYPE
+| | | | | (int)
+| (ID="ptr") TYPE:571b47a0 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | POINTER
+| | | | ELEMENT_TYPE
+| | | | | POINTER
+| | | | | | ELEMENT_TYPE
+| | | | | | | (int)
+| (ID="kim") TYPE:571b4850 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | POINTER
+| | | | ELEMENT_TYPE
+| | | | | ARRAY
+| | | | | | INDEX
+| | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | 10
+(none)
+| | | | | | ELEMENT_TYPE
+| | | | | | | (int)

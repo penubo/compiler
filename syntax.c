@@ -365,15 +365,23 @@ A_ID *setFunctionDeclaratorSpecifier(A_ID *id, A_SPECIFIER *p)
     // TODO: why
     if (p->stor)
         syntax_error(25, NULL);
-    id->specifier = p->stor;
+    // id type이 지정되지 않은 경우 에러
+    if (id->type == NIL) {
+        syntax_error(31, id->name);
+        return (id);
+    }
+    
+        
+    setDefaultSpecifier(p);
 
     // check function identifier immediately before '('
     if (id->type->kind != T_FUNC) {
         syntax_error(21, NULL);
         return (id);
     } else {
+        id = setDeclaratorElementType(id, p->type);
+        id->kind = ID_FUNC;
         // 함수의 리턴 타입을 완성하고 명칭의 종류를 ID_FUNC 로 지정한다
-        setDeclaratorTypeAndKind(id, p->type, ID_FUNC);
     }
 
     // 함수명칭으로 중복선언 검사
@@ -465,7 +473,7 @@ A_ID *setStructDeclaratorListSpecifier(A_ID *id, A_TYPE *t)
         if (searchIdentifierAtCurrentLevel(a->name, a->prev))
             syntax_error(12, a->name);
         // 필드명칭의 타입완성
-        a = setTypeElementType(a, t);
+        a = setDeclaratorElementType(a, t);
         // 명칭의 종류 결정
         a->kind = ID_FIELD;
         a = a->link;

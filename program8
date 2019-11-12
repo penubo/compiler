@@ -1,0 +1,13 @@
+int main() {
+
+	int x;
+
+	if (x > 10)
+		x = 20;
+	else
+		x = 30;
+
+
+	return 0;
+
+}

@@ -1,0 +1,8 @@
+int main() {
+
+	(int) 3 + 4;
+	sizeof(float);
+
+	return 0;
+
+}

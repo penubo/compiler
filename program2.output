@@ -1,0 +1,22 @@
+
+start syntax analysis
+======= syntax tree ==========
+N_PROGRAM (0,0)
+| (ID="kim") TYPE:571d8740 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | STRUCT
+| | | | FIELD
+| | | | | (ID="name") TYPE:571d33c0 KIND:FIELD SPEC=NULL LEV=1 VAL=0 ADDR=0 
+| | | | | | TYPE
+| | | | | | | (char 1)
+| | | | | (ID="value") TYPE:571d3300 KIND:FIELD SPEC=NULL LEV=1 VAL=0 ADDR=0 
+| | | | | | TYPE
+| | | | | | | (int)
+| | | | | (ID="link") TYPE:571d8800 KIND:FIELD SPEC=NULL LEV=1 VAL=0 ADDR=0 
+| | | | | | TYPE
+| | | | | | | POINTER
+| | | | | | | | ELEMENT_TYPE
+| | | | | | | | | (DONE:571d8740)
+| (ID="lee") TYPE:571d8740 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | (DONE:571d8740)
