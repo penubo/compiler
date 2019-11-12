@@ -1,1 +1,5 @@
-int k;
+int kim=10+20;
+float *park[3];
+struct s1 { int x; } STR;
+//STR chang[5];
+//enum e1 {red=10, green, blue} song;
