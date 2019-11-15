@@ -1,4 +1,7 @@
 // A9 Main Function: main.c
+// yacc -d parse.y
+// lex scan.l
+// cc -g -m32 y.tab.c lex.yy.c main.c syntax.c print.c
 #include <stdio.h> 
 #include <stdlib.h> 
 #include "type.h" 
