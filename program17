@@ -1,0 +1,16 @@
+
+
+struct student {
+	int age;
+	int id;
+	char name[20];
+};
+
+int main() {
+
+	struct student s;
+
+	s.age = 10;
+	s.id = 20;
+	s.name = "hello";
+}

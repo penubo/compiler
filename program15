@@ -1,0 +1,24 @@
+int array[20];
+
+void swap(int a, int b) {
+
+	int tmp = array[a];
+	array[a] = array[b];
+	array[b] = tmp;
+
+}
+
+int main() {
+
+	array[0] = 1;
+	array[1] = 2;
+	array[2] = 3;
+
+	swap(2, 3);
+
+
+	return 0;
+	
+
+
+}
