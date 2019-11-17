@@ -1,0 +1,15 @@
+
+
+void doSomething() {
+	
+	return;
+
+}
+
+
+int main() {
+
+	int i, j;
+	i = 0, j = 0;
+
+}
