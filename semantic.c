@@ -1,4 +1,5 @@
 #include "type.h"
+#include <stdio.h>
 float atof();
 void semantic_analysis(A_NODE *);
 void set_literal_address(A_NODE *);

@@ -35,7 +35,7 @@ void prt_sem_program(A_NODE *node, int s)
         prt_sem_A_ID_LIST(node->clink, s + 1);
         break;
     default:
-        printf("****syntax tree error******");
+        printf("****syntax tree error1******");
     }
 }
 void prt_sem_initializer(A_NODE *node, int s)
@@ -53,7 +53,7 @@ void prt_sem_initializer(A_NODE *node, int s)
     case N_INIT_LIST_NIL:
         break;
     default:
-        printf("****syntax tree error******");
+        printf("****syntax tree error2******");
     }
 }
 void prt_sem_expression(A_NODE *node, int s)
@@ -80,7 +80,7 @@ void prt_sem_expression(A_NODE *node, int s)
         prt_sem_expression(node->llink, s + 1);
         prt_sem_expression(node->rlink, s + 1);
         break;
-    N_EXP_FUNCTION_CALL:
+    case N_EXP_FUNCTION_CALL:
         prt_sem_expression(node->llink, s + 1);
         prt_sem_arg_expr_list(node->rlink, s + 1);
         break;
@@ -121,7 +121,7 @@ void prt_sem_expression(A_NODE *node, int s)
     case N_EXP_LEQ:
     case N_EXP_GEQ:
     case N_EXP_NEQ:
-    N_EXP_EQL:
+    case N_EXP_EQL:
     case N_EXP_AND:
     case N_EXP_OR:
     case N_EXP_ASSIGN:
@@ -129,7 +129,7 @@ void prt_sem_expression(A_NODE *node, int s)
         prt_sem_expression(node->rlink, s + 1);
         break;
     default:
-        printf("****syntax tree error******");
+        printf("****syntax tree error3******");
     }
 }
 void prt_sem_arg_expr_list(A_NODE *node, int s)
@@ -144,7 +144,7 @@ void prt_sem_arg_expr_list(A_NODE *node, int s)
     case N_ARG_LIST_NIL:
         break;
     default:
-        printf("****syntax tree error******");
+        printf("****syntax tree error4******");
     }
 }
 void prt_sem_statement(A_NODE *node, int s)
@@ -165,7 +165,7 @@ void prt_sem_statement(A_NODE *node, int s)
             prt_sem_A_ID_LIST(node->llink, s + 1);
         prt_sem_statement_list(node->rlink, s + 1);
         break;
-    N_STMT_EMPTY:
+    case N_STMT_EMPTY:
 
         break;
     case N_STMT_EXPRESSION:
@@ -205,7 +205,7 @@ void prt_sem_statement(A_NODE *node, int s)
             prt_sem_expression(node->clink, s + 1);
         break;
     default:
-        printf("****syntax tree error******");
+        printf("****syntax tree error5******");
     }
 }
 void prt_sem_statement_list(A_NODE *node, int s)
@@ -220,7 +220,7 @@ void prt_sem_statement_list(A_NODE *node, int s)
     case N_STMT_LIST_NIL:
         break;
     default:
-        printf("****syntax tree error******");
+        printf("****syntax tree error6******");
     }
 }
 void prt_sem_for_expression(A_NODE *node, int s)
@@ -237,7 +237,7 @@ void prt_sem_for_expression(A_NODE *node, int s)
             prt_sem_expression(node->rlink, s + 1);
         break;
     default:
-        printf("****syntax tree error******");
+        printf("****syntax tree error7******");
     }
 }
 void prt_sem_integer(int a, int s)

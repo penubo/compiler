@@ -47,15 +47,7 @@ BOOLEAN isNotSameType(A_TYPE *, A_TYPE *);
 BOOLEAN isPointerOrArrayType(A_TYPE *);
 void syntax_error();
 void initialize();
-
-BOOLEAN isPointerOrArrayType(A_TYPE *t) {
-    if (t == NIL) {
-        return (FALSE);
-    }
-    if (t->kind == T_ARRAY || t->kind == T_POINTER)
-        return (TRUE);
-    return (FALSE);
-}
+BOOLEAN isPointerOrArrayType(A_TYPE *t);
 
 // make new node for syntax tree
 A_NODE *makeNode(NODE_NAME n, A_NODE *a, A_NODE *b, A_NODE *c)
