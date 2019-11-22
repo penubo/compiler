@@ -46,7 +46,7 @@ A_TYPE *setTypeElementType(A_TYPE *, A_TYPE *);
 A_TYPE *makeType(T_KIND);
 void setTypeSize(A_TYPE *, int);
 void semantic_warning(int, int);
-void semantic_error();
+void semantic_error(int, int, char *);
 A_NODE *makeNode(NODE_NAME, A_NODE *, A_NODE *, A_NODE *);
 extern A_TYPE *int_type, *float_type, *char_type, *string_type, *void_type;
 int global_address = 12;
@@ -83,7 +83,7 @@ void sem_program(A_NODE *node)
         node->value = global_address;
         break;
     default:
-        semantic_error(90, node->line);
+        semantic_error(90, node->line, NIL);
         break;
     }
 }
@@ -92,7 +92,7 @@ int put_literal(A_LITERAL lit, int ll)
 {
     float ff;
     if (literal_no >= LIT_MAX)
-        semantic_error(93, ll);
+        semantic_error(93, ll, NIL);
     else
         literal_no++;
 
@@ -167,10 +167,10 @@ A_TYPE *sem_expression(A_NODE *node)
         if (isPointerOrArrayType(t1))
             result = t1->element_type;
         else
-            semantic_error(32, node->line);
+            semantic_error(32, node->line, NIL);
 
         if (!isIntegralType(t2))
-            semantic_error(29, node->line);
+            semantic_error(29, node->line, NIL);
         if (!isArrayType(result))
             lvalue = TRUE;
         break;
@@ -188,7 +188,7 @@ A_TYPE *sem_expression(A_NODE *node)
         }
         else
         {
-            semantic_error(37, node->line);
+            semantic_error(37, node->line, NIL);
         }
 
         node->rlink = id;
@@ -206,7 +206,7 @@ A_TYPE *sem_expression(A_NODE *node)
         }
         else
         {
-            semantic_error(37, node->line);
+            semantic_error(37, node->line, NIL);
         }
         node->rlink = id;
         break;
@@ -224,7 +224,7 @@ A_TYPE *sem_expression(A_NODE *node)
         }
         else
         {
-            semantic_error(21, node->line);
+            semantic_error(21, node->line, NIL);
         }
 
         break;
@@ -235,10 +235,10 @@ A_TYPE *sem_expression(A_NODE *node)
         // usual binary conversion between the expression and 1
         // 수식의 타입 검사
         if (!isScalarType(result))
-            semantic_error(27, node->line);
+            semantic_error(27, node->line, NIL);
         // check if modifiable lvalue
         if (!isModifiableLvalue(node->clink))
-            semantic_error(60, node->line);
+            semantic_error(60, node->line, NIL);
         break;
     case N_EXP_CAST:
         result = node->llink;
@@ -246,7 +246,7 @@ A_TYPE *sem_expression(A_NODE *node)
         t = sem_expression(node->rlink);
         // check allowable casting conversion
         if (!isAllowableCastingConversion(result, t))
-            semantic_error(58, node->line);
+            semantic_error(58, node->line, NIL);
         break;
 
     case N_EXP_SIZE_TYPE:
@@ -254,7 +254,7 @@ A_TYPE *sem_expression(A_NODE *node)
         i = sem_A_TYPE(t);
         // check if incomplete array, function, void
         if (isArrayType(t) && t->size == 0 || isFunctionType(t) || isVoidType(t))
-            semantic_error(39, node->line);
+            semantic_error(39, node->line, NIL);
         else
             node->clink = i;
         result = int_type;
@@ -263,7 +263,7 @@ A_TYPE *sem_expression(A_NODE *node)
         t = sem_expression(node->clink);
         // check if incomplete array, function
         if ((node->clink->name != N_EXP_IDENT || ((A_ID *)node->clink->clink)->kind != ID_PARM) && (isArrayType(t) && t->size == 0 || isFunctionType(t)))
-            semantic_error(39, node->line);
+            semantic_error(39, node->line, NIL);
         else
             node->clink = t->size;
         result = int_type;
@@ -279,7 +279,7 @@ A_TYPE *sem_expression(A_NODE *node)
         }
         else
         {
-            semantic_error(13, node->line);
+            semantic_error(13, node->line, NIL);
         }
 
         break;
@@ -294,7 +294,7 @@ A_TYPE *sem_expression(A_NODE *node)
         }
         else
         {
-            semantic_error(27, node->line);
+            semantic_error(27, node->line, NIL);
         }
 
         break;
@@ -310,7 +310,7 @@ A_TYPE *sem_expression(A_NODE *node)
         }
         else
         {
-            semantic_error(60, node->line);
+            semantic_error(60, node->line, NIL);
         }
 
         break;
@@ -328,7 +328,7 @@ A_TYPE *sem_expression(A_NODE *node)
         }
         else
         {
-            semantic_error(31, node->line);
+            semantic_error(31, node->line, NIL);
         }
 
         break;
@@ -338,10 +338,10 @@ A_TYPE *sem_expression(A_NODE *node)
         // usual binary conversion between the expression and 1
         // 수식의 타입 검사
         if (!isScalarType(result))
-            semantic_error(27, node->line);
+            semantic_error(27, node->line, NIL);
         // check if modifiable lvalue
         if (!isModifiableLvalue(node->clink))
-            semantic_error(60, node->line);
+            semantic_error(60, node->line, NIL);
         break;
 
     case N_EXP_MUL:
@@ -352,7 +352,7 @@ A_TYPE *sem_expression(A_NODE *node)
         if (isArithmeticType(t1) && isArithmeticType(t2))
             result = convertUsualBinaryConversion(node);
         else
-            semantic_error(28, node->line);
+            semantic_error(28, node->line, NIL);
         break;
     case N_EXP_MOD:
         t1 = sem_expression(node->llink);
@@ -360,7 +360,7 @@ A_TYPE *sem_expression(A_NODE *node)
         if (isIntegralType(t1) && isIntegralType(t2))
             result = convertUsualBinaryConversion(node);
         else
-            semantic_error(29, node->line);
+            semantic_error(29, node->line, NIL);
 
         result = int_type;
         break;
@@ -376,7 +376,7 @@ A_TYPE *sem_expression(A_NODE *node)
         else if (isIntegralType(t1) && isPointerType(t2))
             result = t2;
         else
-            semantic_error(24, node->line);
+            semantic_error(24, node->line, NIL);
         break;
 
     case N_EXP_SUB:
@@ -390,7 +390,7 @@ A_TYPE *sem_expression(A_NODE *node)
         else if (isCompatiblePointerType(t1, t2))
             result = t1;
         else
-            semantic_error(24, node->line);
+            semantic_error(24, node->line, NIL);
         break;
 
     case N_EXP_LSS:
@@ -403,7 +403,7 @@ A_TYPE *sem_expression(A_NODE *node)
         if (isArithmeticType(t1) && isArithmeticType(t2))
             t = convertUsualBinaryConversion(node);
         else if (!isCompatiblePointerType(t1, t2))
-            semantic_error(40, node->line);
+            semantic_error(40, node->line, NIL);
         result = int_type;
         break;
 
@@ -416,7 +416,7 @@ A_TYPE *sem_expression(A_NODE *node)
         else if (!isCompatiblePointerType(t1, t2) &&
                  (!isPointerType(t1) || !isConstantZeroExp(node->rlink)) &&
                  (!isPointerType(t2) || !isConstantZeroExp(node->llink)))
-            semantic_error(40, node->line);
+            semantic_error(40, node->line, NIL);
         result = int_type;
         break;
 
@@ -427,12 +427,12 @@ A_TYPE *sem_expression(A_NODE *node)
         if (isScalarType(t))
             node->llink = convertUsualUnaryConversion(node->llink);
         else
-            semantic_error(27, node->line);
+            semantic_error(27, node->line, NIL);
         t = sem_expression(node->rlink);
         if (isScalarType(t))
             node->rlink = convertUsualUnaryConversion(node->rlink);
         else
-            semantic_error(27, node->line);
+            semantic_error(27, node->line, NIL);
         result = int_type;
         break;
 
@@ -440,7 +440,7 @@ A_TYPE *sem_expression(A_NODE *node)
         result = sem_expression(node->llink);
         // check if modifiable lvalue
         if (!isModifiableLvalue(node->llink))
-            semantic_error(60, node->line);
+            semantic_error(60, node->line, NIL);
         // 좌우 수식의 타입 검사와 변환
         t = sem_expression(node->rlink);
         if (isAllowableAssignmentConversion(result, t, node->rlink))
@@ -450,13 +450,13 @@ A_TYPE *sem_expression(A_NODE *node)
         }
         else
         {
-            semantic_error(58, node->line);
+            semantic_error(58, node->line, NIL);
         }
 
         break;
 
     default:
-        semantic_error(90, node->line);
+        semantic_error(90, node->line, NIL);
         break;
     }
 
@@ -476,7 +476,7 @@ void sem_arg_expr_list(A_NODE *node, A_ID *id)
     {
     case N_ARG_LIST:
         if (id == 0)
-            semantic_error(34, node->line);
+            semantic_error(34, node->line, NIL);
         else
         {
             if (id->type)
@@ -486,7 +486,7 @@ void sem_arg_expr_list(A_NODE *node, A_ID *id)
                 if (isAllowableCastingConversion(id->type, node->llink->type))
                     node->llink = convertCastingConversion(node->llink, id->type);
                 else
-                    semantic_error(59, node->line);
+                    semantic_error(59, node->line, NIL);
                 sem_arg_expr_list(node->rlink, id->link);
             }
             else
@@ -500,10 +500,10 @@ void sem_arg_expr_list(A_NODE *node, A_ID *id)
         break;
     case N_ARG_LIST_NIL:
         if (id && id->type) // check if '...' argument
-            semantic_error(35, node->line);
+            semantic_error(35, node->line, NIL);
         break;
     default:
-        semantic_error(90, node->line);
+        semantic_error(90, node->line, NIL);
         break;
     }
     if (arg_size % 4)
@@ -529,20 +529,20 @@ int sem_statement(A_NODE *node, int addr, A_TYPE *ret, BOOLEAN sw, BOOLEAN brk, 
     {
     case N_STMT_LABEL_CASE:
         if (sw == FALSE)
-            semantic_error(71, node->line);
+            semantic_error(71, node->line, NIL);
         lit = getTypeAndValueOfExpression(node->llink);
         // 상수수식의 타입검사, 상수값 저장
         if (isIntegralType(lit.type))
             node->llink = lit.value.i;
-        else 
-            semantic_error(51, node->line);
+        else
+            semantic_error(51, node->line, NIL);
         local_size = sem_statement(node->rlink, addr, ret, sw, brk, cnt);
         break;
 
     case N_STMT_LABEL_DEFAULT:
         // 명령문 사용가능 여부 판단
         if (sw == FALSE)
-            semantic_error(72, node->line);
+            semantic_error(72, node->line, NIL);
         local_size = sem_statement(node->clink, addr, ret, sw, brk, cnt);
         break;
     case N_STMT_COMPOUND:
@@ -561,8 +561,8 @@ int sem_statement(A_NODE *node, int addr, A_TYPE *ret, BOOLEAN sw, BOOLEAN brk, 
         if (isScalarType(t))
             node->llink = convertScalarToInteger(node->llink);
         else
-            semantic_error(50, node->line);
-        
+            semantic_error(50, node->line, NIL);
+
         local_size = sem_statement(node->rlink, addr, ret, FALSE, brk, cnt);
         break;
 
@@ -571,156 +571,219 @@ int sem_statement(A_NODE *node, int addr, A_TYPE *ret, BOOLEAN sw, BOOLEAN brk, 
         // 수식의 타입 검사
         if (isScalarType(t))
             node->llink = convertScalarToInteger(node->llink);
-        else 
-            semantic_error(50, node->line);
+        else
+            semantic_error(50, node->line, NIL);
         local_size = sem_statement(node->clink, addr, ret, FALSE, brk, cnt);
-        i = sem_statement(node->rlink,addr,ret, FALSE, brk, cnt);
+        i = sem_statement(node->rlink, addr, ret, FALSE, brk, cnt);
         // 명령문 내부 선언문의 크기 결정
         if (local_size < i)
             local_size = i;
         break;
-        
+
     case N_STMT_SWITCH:
         t = sem_expression(node->llink);
         // 수식의 타입 검사
-        ? ? ? ? ? ? ? ? ? ? local_size = sem_statement(node->rlink, addr, ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?);
+        if (!isIntegralType(t))
+            semantic_error(50, node->line, NIL);
+        local_size = sem_statement(node->rlink, addr, ret, TRUE, TRUE, cnt);
         break;
+
     case N_STMT_WHILE:
         t = sem_expression(node->llink);
         // 수식의 타입 검사
-        ? ? ? ? ? ? ? ? ? ? local_size = sem_statement(node->rlink, addr, ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?);
+        if (isScalarType(t))
+            node->llink = convertScalarToInteger(node->llink);
+        else
+            semantic_error(50, node->line, NIL);
+        local_size = sem_statement(node->rlink, addr, ret, FALSE, TRUE, TRUE);
         break;
+
     case N_STMT_DO:
-local_size=sem_statement(node->llink,addr,?????????????????????);
-t = sem_expression(node->rlink);
-// 수식의 타입 검사
-? ? ? ? ? ? ? ? ? ? break;
+        local_size = sem_statement(node->llink, addr, ret, FALSE, TRUE, TRUE);
+        t = sem_expression(node->rlink);
+        // 수식의 타입 검사
+        if (isScalarType(t))
+            node->rlink = convertScalarToInteger(node->rlink);
+        else
+            semantic_error(50, node->line, NIL);
+        break;
+
     case N_STMT_FOR:
         sem_for_expression(node->llink);
-local_size=sem_statement(node->rlink,addr,???????????????????????);
-break;
+        local_size = sem_statement(node->rlink, addr, ret, FALSE, TRUE, TRUE);
+        break;
+
     case N_STMT_CONTINUE:
         // 명령문 사용가능 여부 판단
-        ? ? ? ? ? ? ? ? ? ? break;
+        if (cnt == FALSE)
+            semantic_error(74, node->line, NIL);
+        break;
+
     case N_STMT_BREAK:
         // 명령문 사용가능 여부 판단
-        ? ? ? ? ? ? ? ? ? ? break;
+        if (brk == FALSE)
+            semantic_error(73, node->line, NIL);
+        break;
+
     case N_STMT_RETURN:
         if (node->clink)
         {
             t = sem_expression(node->clink);
             // 수식의 리턴 타입 분석
-            ? ? ? ? ? break;
-        default:
-            semantic_error(90, node->line);
-            break;
+            if (isAllowableCastingConversion(ret, t))
+                node->clink = convertCastingConversion(node->clink, ret);
+            else
+                semantic_error(57, node->line, NIL);
         }
-        node->value = local_size;
-        return (local_size);
+        break;
+    default:
+        semantic_error(90, node->line, NIL);
+        break;
     }
-    void sem_for_expression(A_NODE * node)
+    node->value = local_size;
+    return (local_size);
+}
+
+void sem_for_expression(A_NODE *node)
+{
+    A_TYPE *t;
+    switch (node->name)
     {
-        A_TYPE *t;
-        switch (node->name)
+    case N_FOR_EXP:
+        if (node->llink)
+            t = sem_expression(node->llink);
+        if (node->clink)
         {
-        case N_FOR_EXP:
-            if (node->llink)
-                t = sem_expression(node->llink);
-            if (node->clink)
-            {
-                t = sem_expression(node->clink);
-                // 수식의 타입 검사
-                ? ? ? ? ?
-                        ? ? ? ? ?
-            }
-            if (node->rlink)
-                t = sem_expression(node->rlink);
-            break;
-        default:
-            semantic_error(90, node->line);
-            break;
+            t = sem_expression(node->clink);
+            // 수식의 타입 검사
+            if (isScalarType(t))
+                node->clink = convertScalarToInteger(node->clink);
+            else
+                semantic_error(49, node->line, NIL);
         }
+        if (node->rlink)
+            t = sem_expression(node->rlink);
+        break;
+    default:
+        semantic_error(90, node->line, NIL);
+        break;
     }
-    // check statement-list and return local variable size
-    int sem_statement_list(A_NODE * node, int addr, A_TYPE *ret, BOOLEAN sw, BOOLEAN brk, BOOLEAN cnt)
+}
+
+// check statement-list and return local variable size
+int sem_statement_list(A_NODE *node, int addr, A_TYPE *ret, BOOLEAN sw, BOOLEAN brk, BOOLEAN cnt)
+{
+    int size, i;
+    switch (node->name)
     {
-        int size, i;
-        switch (node->name)
+    case N_STMT_LIST:
+        size = sem_statement(node->llink, addr, ret, sw, brk, cnt);
+        i = sem_statement_list(node->rlink, addr, ret, sw, brk, cnt);
+        if (size < i)
+            size = i;
+        break;
+    case N_STMT_LIST_NIL:
+        size = 0;
+        break;
+    default:
+        semantic_error(90, node->line, NIL);
+        break;
+    }
+    node->value = size;
+    return (size);
+}
+// check type and return its size (size of incomplete type is 0)
+
+int sem_A_TYPE(A_TYPE *t)
+{
+    A_ID *id;
+    A_TYPE *tt;
+    A_LITERAL lit;
+    int result = 0, i;
+    if (t->check)
+        return (t->size);
+    t->check = 1;
+    switch (t->kind)
+    {
+    case T_NULL:
+        semantic_error(80, t->line, NIL);
+        break;
+    case T_ENUM:
+        i = 0;
+        id = t->field;
+        while (id)
         {
-        case N_STMT_LIST:
-size=sem_statement(node->llink, ?????????????????????); i=sem_statement_list(node->rlink, ?????????????????????);
-if (size < i)
-    size = i;
-break;
-        case N_STMT_LIST_NIL:
-            size = 0;
-            break;
-        default:
-            semantic_error(90, node->line);
-            break;
+            // enumerator 들의 값계산 저장 // 초기화수식이 있는 경우 수식의 값과 타입 검사
+            if (id->init)
+            {
+                lit = getTypeAndValueOfExpression(id->init);
+                if (!isIntType(lit.type))
+                    semantic_error(81, id->line, NIL);
+                i = lit.value.i;
+            }
+            id->init = i++;
+            id = id->link;
         }
-        node->value = size;
-        return (size);
-    }
-    // check type and return its size (size of incomplete type is 0) int sem_A_TYPE(A_TYPE *t)
-    {
-        A_ID *id;
-        A_TYPE *tt;
-        A_LITERAL lit;
-        int result = 0, i;
-        if (t->check)
-            return (t->size);
-        t->check = 1;
-        switch (t->kind)
+        result = 4;
+        break;
+    case T_ARRAY:
+        if (t->expr)
         {
-        case T_NULL:
-            semantic_error(80, t->line);
-            break;
-        case T_ENUM:
-            i = 0;
-            id = t->field;
-            while (id)
+            // 배열 크기 수식 계산 검사 저장
+            lit = getTypeAndValueOfExpression(t->expr);
+            if (!isIntType(lit.type) || lit.value.i <= 0)
             {
-                // enumerator 들의 값계산 저장 // 초기화수식이 있는 경우 수식의 값과 타입 검사
-                ? ? ? ? ?
-                        ? ? ? ? ?
+                semantic_error(82, t->line, NIL);
+                t->expr = 0;
             }
-            result = 4;
-            break;
-        case T_ARRAY:
-            if (t->expr)
+            else
             {
-                // 배열 크기 수식 계산 검사 저장
-                ? ? ? ? ?
-                        ? ? ? ? ?
+                t->expr = lit.value.i;
             }
-            result = sem_A_TYPE(t->element_type) * (int)t->expr;
-            // 배열의 원소 타입 검사
-            ? ? ? ? ? ? ? ? ? ? break;
-        case T_STRUCT:
-            id = t->field;
-            while (id)
-            { result+=sem_declaration(id, ????????????);
-                id = id->link;
-            }
-            break;
-        case T_UNION:
-            id = t->field;
-            while (id)
-            { i=sem_declaration(id,????????????);
-                if (i > result)
-                    result = i;
-                id = id->link;
-            }
-            break;
-        case T_FUNC:
-            tt = t->element_type;
-            i = sem_A_TYPE(tt);                                    // check return type ?????
-            ? ? ? ? ? i = sem_declaration_list(t->field, 12) + 12; // parameter type and size if (t->expr) {	 	// skip prototype declaration
-  i=i+sem_statement(t->expr,i,?????????????????????????????????);
+        }
+
+        i = sem_A_TYPE(t->element_type) * (int)t->expr;
+        // 배열의 원소 타입 검사
+        if (isVoidType(t->element_type) || isFunctionType(t->element_type))
+            semantic_error(83, t->line, NIL);
+        else
+            result = i;
+        break;
+
+    case T_STRUCT:
+        id = t->field;
+        while (id)
+        {
+            result += sem_declaration(id, result);
+            id = id->link;
+        }
+        break;
+
+    case T_UNION:
+        id = t->field;
+        while (id)
+        {
+            i = sem_declaration(id, 0);
+            if (i > result)
+                result = i;
+            id = id->link;
+        }
+        break;
+
+    case T_FUNC:
+        tt = t->element_type;
+        i = sem_A_TYPE(tt);
+        // check return type
+        if (isArrayType(tt) || isFunctionType(tt))
+            semantic_error(85, t->line, NIL);
+        i = sem_declaration_list(t->field, 12) + 12; // parameter type and size
+        if (t->expr)
+        { // skip prototype declaration
+            i = i + sem_statement(t->expr, i, t->element_type, FALSE, FALSE, FALSE);
         }
         t->local_var_size = i;
         break;
+    // TODO: from here
     case T_POINTER:
         i = sem_A_TYPE(t->element_type);
         result = 4;
@@ -728,13 +791,15 @@ break;
     case T_VOID:
         break;
     default:
-        semantic_error(90, t->line);
+        semantic_error(90, t->line, NIL);
         break;
     }
     t->size = result;
     return (result);
 }
-// set variable address in declaration-list, and return its total variable size int sem_declaration_list(A_ID *id, int addr)
+
+// set variable address in declaration-list, and return its total variable size
+int sem_declaration_list(A_ID *id, int addr)
 {
     int i = addr;
     while (id)
@@ -744,7 +809,8 @@ break;
     }
     return (addr - i);
 }
-// check declaration (identifier), set address, and return its size int sem_declaration(A_ID *id,int addr)
+// check declaration (identifier), set address, and return its size
+int sem_declaration(A_ID *id, int addr)
 {
     A_TYPE *t;
     int size = 0, i;
@@ -754,7 +820,7 @@ break;
     case ID_VAR:
         i = sem_A_TYPE(id->type); // check empty array
         if (isArrayType(id->type) && id->type->expr == NIL)
-            semantic_error(86, id->line);
+            semantic_error(86, id->line, NIL);
         if (i % 4)
             i = i / 4 * 4 + 4;
         if (id->specifier == S_STATIC)
@@ -773,7 +839,10 @@ break;
     case ID_FIELD:
         i = sem_A_TYPE(id->type);
         // 필드의 타입 검사
-        ? ? ? ? ? ? ? ? ? ? if (i % 4) i = i / 4 * 4 + 4;
+        if (isFunctionType(id->type) || isVoidType(id->type))
+            semantic_error(84, id->line, NIL);
+        if (i % 4) 
+            i = i / 4 * 4 + 4;
         id->address = addr;
         size = i;
         break;
@@ -783,8 +852,23 @@ break;
     case ID_PARM:
         if (id->type)
         {
-            size = sem_A_TYPE(id->type); // usual unary conversion of parm type ?????
-            ? ? ? ? ? size = id->type->size;
+            size = sem_A_TYPE(id->type); 
+            // usual unary conversion of parm type 
+            if (id->type == char_type)
+                id->type = int_type;
+            else if (isArrayType(id->type))
+            {
+                id->type->kind = T_POINTER;
+                id->type->size=4;
+            }
+            else if (isFunctionType(id->type))
+            {
+                t = makeType(T_POINTER);
+                t->element_type = id->type;
+                t->size = 4;
+                id->type = t;
+            }
+            size = id->type->size;
             if (size % 4)
                 size = size / 4 * 4 + 4;
             id->address = addr;
@@ -799,6 +883,7 @@ break;
     }
     return (size);
 }
+
 A_ID *getStructFieldIdentifier(A_TYPE *t, char *s)
 {
     A_ID *id = NIL;
@@ -1073,8 +1158,7 @@ BOOLEAN isArrayType(A_TYPE *t)
 }
 BOOLEAN isStringType(A_TYPE *t)
 {
-    if (t && (t->kind == T_POINTER || t->kind == T_ARRAY) &&
-        t->element_type == char_type)
+    if (t && (t->kind == T_POINTER || t->kind == T_ARRAY) && t->element_type == char_type)
         return (TRUE);
     else
         return (FALSE);
@@ -1105,7 +1189,7 @@ A_LITERAL checkTypeAndConvertLiteral(A_LITERAL result, A_TYPE *t, int ll)
         result.value.i = result.value.c;
     }
     else
-        semantic_error(41, ll);
+        semantic_error(41, ll, NIL);
     return (result);
 }
 A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
@@ -1150,7 +1234,7 @@ A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
     case N_EXP_AMP:
     case N_EXP_STAR:
     case N_EXP_NOT:
-        semantic_error(18, node->line);
+        semantic_error(18, node->line, NIL);
         break;
     case N_EXP_MINUS:
         result = getTypeAndValueOfExpression(node->clink);
@@ -1159,7 +1243,7 @@ A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
         else if (result.type == float_type)
             result.value.f = -result.value.f;
         else
-            semantic_error(18, node->line);
+            semantic_error(18, node->line, NIL);
 
         break;
     case N_EXP_SIZE_EXP:
@@ -1199,9 +1283,9 @@ A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
             result.value.f = result.value.f * r.value.f;
         }
         else
-            semantic_error(18, node->line);
+            semantic_error(18, node->line, NIL);
         break;
-    N_EXP_DIV:
+    case N_EXP_DIV:
         result = getTypeAndValueOfExpression(node->llink);
         r = getTypeAndValueOfExpression(node->rlink);
         if (result.type == int_type && r.type == int_type)
@@ -1225,7 +1309,7 @@ A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
             result.value.f = result.value.f / r.value.f;
         }
         else
-            semantic_error(18, node->line);
+            semantic_error(18, node->line, NIL);
         break;
     case N_EXP_MOD:
         result = getTypeAndValueOfExpression(node->llink);
@@ -1233,7 +1317,7 @@ A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
         if (result.type == int_type && r.type == int_type)
             result.value.i = result.value.i % r.value.i;
         else
-            semantic_error(18, node->line);
+            semantic_error(18, node->line, NIL);
         break;
     case N_EXP_ADD:
         result = getTypeAndValueOfExpression(node->llink);
@@ -1259,7 +1343,7 @@ A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
             result.value.f = result.value.f + r.value.f;
         }
         else
-            semantic_error(18, node->line);
+            semantic_error(18, node->line, NIL);
         break;
     case N_EXP_SUB:
         result = getTypeAndValueOfExpression(node->llink);
@@ -1285,7 +1369,7 @@ A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
             result.value.f = result.value.f - r.value.f;
         }
         else
-            semantic_error(18, node->line);
+            semantic_error(18, node->line, NIL);
         break;
     case N_EXP_LSS:
     case N_EXP_GTR:
@@ -1293,13 +1377,13 @@ A_LITERAL getTypeAndValueOfExpression(A_NODE *node)
     case N_EXP_GEQ:
     case N_EXP_NEQ:
     case N_EXP_EQL:
-    N_EXP_AND:
+    case N_EXP_AND:
     case N_EXP_OR:
     case N_EXP_ASSIGN:
-        semantic_error(18, node->line);
+        semantic_error(18, node->line, NIL);
         break;
     default:
-        semantic_error(90, node->line);
+        semantic_error(90, node->line, NIL);
         break;
     }
     return (result);
@@ -1384,7 +1468,7 @@ void semantic_error(int i, int ll, char *s)
     case 71:
         printf("case label not within a switch statement \n");
         break;
-        72 : printf("default label not within a switch statement \n");
+    case 72: printf("default label not within a switch statement \n");
         break;
     case 73:
         printf("break statement not within loop or switch stmt\n");
