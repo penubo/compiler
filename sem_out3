@@ -1,0 +1,52 @@
+
+start syntax analysis
+======= syntax tree ==========
+N_PROGRAM (0,0)
+| (ID="func") TYPE:56dae750 KIND:FUNC SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | FUNCTION
+| | | | PARAMETER
+| | | | TYPE
+| | | | | (int)
+| (ID="ptr") TYPE:56dae7a0 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | POINTER
+| | | | ELEMENT_TYPE
+| | | | | POINTER
+| | | | | | ELEMENT_TYPE
+| | | | | | | (int)
+| (ID="kim") TYPE:56dae850 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | POINTER
+| | | | ELEMENT_TYPE
+| | | | | ARRAY
+| | | | | | INDEX
+| | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | 10
+(none)
+| | | | | | ELEMENT_TYPE
+| | | | | | | (int)
+=======  semantic tree  ==========
+N_PROGRAM (0,20)
+| (ID="func") TYPE:56dae750 KIND:FUNC SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+ | |  TYPE
+| | | FUNCTION
+| | | |  PARAMETER
+| | | |  TYPE
+| | | | | (int)
+| (ID="ptr") TYPE:56dae7a0 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=12 
+ | |  TYPE
+| | | POINTER
+| | | |  ELEMENT_TYPE
+| | | | | POINTER
+| | | | | |  ELEMENT_TYPE
+| | | | | | | (int)
+| (ID="kim") TYPE:56dae850 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=16 
+ | |  TYPE
+| | | POINTER
+| | | |  ELEMENT_TYPE
+| | | | | ARRAY
+| | | | | |  INDEX
+| | | | | | | INT=10
+| | | | | |  ELEMENT_TYPE
+| | | | | | | (int)

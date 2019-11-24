@@ -1,0 +1,58 @@
+
+start syntax analysis
+======= syntax tree ==========
+N_PROGRAM (0,0)
+| (ID="main") TYPE:57260750 KIND:FUNC SPEC=NULL LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | FUNCTION
+| | | | PARAMETER
+| | | | TYPE
+| | | | | (int)
+| | | | BODY
+| | | | | N_STMT_COMPOUND (0,0)
+| | | | | | N_STMT_LIST (0,0)
+| | | | | | | N_STMT_EXPRESSION (0,0)
+| | | | | | | | N_EXP_ADD (0,0)
+| | | | | | | | | N_EXP_CAST (0,0)
+| | | | | | | | | | (int)
+| | | | | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | | | | 3
+| | | | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | | | 4
+| | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | N_STMT_EXPRESSION (0,0)
+| | | | | | | | | N_EXP_SIZE_TYPE (0,0)
+| | | | | | | | | | (float)
+| | | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | | N_STMT_RETURN (0,0)
+| | | | | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | | | | 0
+| | | | | | | | | N_STMT_LIST_NIL (0,0)
+=======  semantic tree  ==========
+N_PROGRAM (0,12)
+| (ID="main") TYPE:57260750 KIND:FUNC SPEC=NULL LEV=0 VAL=0 ADDR=0 
+ | |  TYPE
+| | | FUNCTION
+| | | |  PARAMETER
+| | | |  TYPE
+| | | | | (int)
+| | | |  BODY
+| | | | | N_STMT_COMPOUND (0,0)
+| | | | | | N_STMT_LIST (0,0)
+| | | | | | | N_STMT_EXPRESSION (0,0)
+| | | | | | | | N_EXP_ADD (5725b300,0)
+| | | | | | | | | N_EXP_CAST (5725b300,0)
+| | | | | | | | | | (int)
+| | | | | | | | | | N_EXP_INT_CONST (5725b300,0)
+| | | | | | | | | | | INT=3
+| | | | | | | | | N_EXP_INT_CONST (5725b300,0)
+| | | | | | | | | | INT=4
+| | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | N_STMT_EXPRESSION (0,0)
+| | | | | | | | | N_EXP_SIZE_TYPE (5725b300,0)
+| | | | | | | | | | INT=4
+| | | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | | N_STMT_RETURN (0,0)
+| | | | | | | | | | N_EXP_INT_CONST (5725b300,0)
+| | | | | | | | | | | INT=0
+| | | | | | | | | N_STMT_LIST_NIL (0,0)

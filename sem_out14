@@ -1,0 +1,101 @@
+
+start syntax analysis
+======= syntax tree ==========
+N_PROGRAM (0,0)
+| (ID="doSomething") TYPE:57b12750 KIND:FUNC SPEC=NULL LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | FUNCTION
+| | | | PARAMETER
+| | | | TYPE
+| | | | | (void)
+| | | | BODY
+| | | | | N_STMT_COMPOUND (0,0)
+| | | | | | N_STMT_LIST (0,0)
+| | | | | | | N_STMT_RETURN (0,0)
+| | | | | | | N_STMT_LIST_NIL (0,0)
+| (ID="main") TYPE:57b12850 KIND:FUNC SPEC=NULL LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | FUNCTION
+| | | | PARAMETER
+| | | | TYPE
+| | | | | (int)
+| | | | BODY
+| | | | | N_STMT_COMPOUND (0,0)
+| | | | | | (ID="i") TYPE:57b0d300 KIND:VAR SPEC=AUTO LEV=1 VAL=0 ADDR=0 
+| | | | | | | TYPE
+| | | | | | | | (int)
+| | | | | | | INIT
+| | | | | | | | N_INIT_LIST_ONE (0,0)
+| | | | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | | | 2
+| | | | | | N_STMT_LIST (0,0)
+| | | | | | | N_STMT_SWITCH (0,0)
+| | | | | | | | N_EXP_IDENT (0,0)
+| | | | | | | | | (ID="i") TYPE:57b0d300 KIND:VAR SPEC=AUTO LEV=1 VAL=0 ADDR=0 
+| | | | | | | | N_STMT_COMPOUND (0,0)
+| | | | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | | | N_STMT_LABEL_CASE (0,0)
+| | | | | | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | | | | | 2
+| | | | | | | | | | | N_STMT_EXPRESSION (0,0)
+| | | | | | | | | | | | N_EXP_ADD (0,0)
+| | | | | | | | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | | | | | | | 1
+| | | | | | | | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | | | | | | | 1
+| | | | | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | | | | N_STMT_BREAK (0,0)
+| | | | | | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | | | | | N_STMT_LABEL_DEFAULT (0,0)
+| | | | | | | | | | | | | N_STMT_BREAK (0,0)
+| | | | | | | | | | | | N_STMT_LIST_NIL (0,0)
+| | | | | | | N_STMT_LIST_NIL (0,0)
+=======  semantic tree  ==========
+N_PROGRAM (0,12)
+| (ID="doSomething") TYPE:57b12750 KIND:FUNC SPEC=NULL LEV=0 VAL=0 ADDR=0 
+ | |  TYPE
+| | | FUNCTION
+| | | |  PARAMETER
+| | | |  TYPE
+| | | | | (void)
+| | | |  BODY
+| | | | | N_STMT_COMPOUND (0,0)
+| | | | | | N_STMT_LIST (0,0)
+| | | | | | | N_STMT_RETURN (0,0)
+| | | | | | | N_STMT_LIST_NIL (0,0)
+| (ID="main") TYPE:57b12850 KIND:FUNC SPEC=NULL LEV=0 VAL=0 ADDR=0 
+ | |  TYPE
+| | | FUNCTION
+| | | |  PARAMETER
+| | | |  TYPE
+| | | | | (int)
+| | | |  BODY
+| | | | | N_STMT_COMPOUND (0,4)
+| | | | | | (ID="i") TYPE:57b0d300 KIND:VAR SPEC=AUTO LEV=1 VAL=0 ADDR=12 
+ | | | | | | |  TYPE
+| | | | | | | | (int)
+| | | | | | |  INIT
+| | | | | | | | N_INIT_LIST_ONE (0,0)
+| | | | | | | | | N_EXP_INT_CONST (0,0)
+| | | | | | | | | | INT=2
+| | | | | | N_STMT_LIST (0,0)
+| | | | | | | N_STMT_SWITCH (0,0)
+| | | | | | | | N_EXP_IDENT (57b0d300,1)
+| | | | | | | | | (ID="i") TYPE:57b0d300 KIND:VAR SPEC=AUTO LEV=1 VAL=0 ADDR=12 
+ | | | | | | | | N_STMT_COMPOUND (0,0)
+| | | | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | | | N_STMT_LABEL_CASE (0,0)
+| | | | | | | | | | | INT=2
+| | | | | | | | | | | N_STMT_EXPRESSION (0,0)
+| | | | | | | | | | | | N_EXP_ADD (57b0d300,0)
+| | | | | | | | | | | | | N_EXP_INT_CONST (57b0d300,0)
+| | | | | | | | | | | | | | INT=1
+| | | | | | | | | | | | | N_EXP_INT_CONST (57b0d300,0)
+| | | | | | | | | | | | | | INT=1
+| | | | | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | | | | N_STMT_BREAK (0,0)
+| | | | | | | | | | | N_STMT_LIST (0,0)
+| | | | | | | | | | | | N_STMT_LABEL_DEFAULT (0,0)
+| | | | | | | | | | | | | N_STMT_BREAK (0,0)
+| | | | | | | | | | | | N_STMT_LIST_NIL (0,0)
+| | | | | | | N_STMT_LIST_NIL (0,0)

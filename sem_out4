@@ -1,0 +1,82 @@
+
+start syntax analysis
+======= syntax tree ==========
+N_PROGRAM (0,0)
+| (ID="fun") TYPE:57e388a0 KIND:FUNC SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | FUNCTION
+| | | | PARAMETER
+| | | | | (ID="p") TYPE:57e38770 KIND:PARM SPEC=NULL LEV=1 VAL=0 ADDR=0 
+| | | | | | TYPE
+| | | | | | | POINTER
+| | | | | | | | ELEMENT_TYPE
+| | | | | | | | | (float)
+| | | | | (ID="") TYPE:57e38810 KIND:PARM SPEC=NULL LEV=1 VAL=0 ADDR=0 
+| | | | | | TYPE
+| | | | | | | ARRAY
+| | | | | | | | INDEX
+| | | | | | | | | (none)
+| | | | | | | | ELEMENT_TYPE
+| | | | | | | | | POINTER
+| | | | | | | | | | ELEMENT_TYPE
+| | | | | | | | | | | (int)
+| | | | TYPE
+| | | | | (int)
+| (ID="arr") TYPE:57e38970 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+| | TYPE
+| | | ARRAY
+| | | | INDEX
+| | | | | N_EXP_INT_CONST (0,0)
+| | | | | | 10
+(none)
+| | | | ELEMENT_TYPE
+| | | | | POINTER
+| | | | | | ELEMENT_TYPE
+| | | | | | | FUNCTION
+| | | | | | | | PARAMETER
+| | | | | | | | | (ID="") TYPE:57e389e0 KIND:PARM SPEC=NULL LEV=1 VAL=0 ADDR=0 
+| | | | | | | | | | TYPE
+| | | | | | | | | | | POINTER
+| | | | | | | | | | | | ELEMENT_TYPE
+| | | | | | | | | | | | | (int)
+| | | | | | | | | (ID="") TYPE:0 KIND:PARM SPEC=NULL LEV=1 VAL=0 ADDR=0 
+| | | | | | | | TYPE
+| | | | | | | | | (float)
+=======  semantic tree  ==========
+N_PROGRAM (0,52)
+| (ID="fun") TYPE:57e388a0 KIND:FUNC SPEC=AUTO LEV=0 VAL=0 ADDR=0 
+ | |  TYPE
+| | | FUNCTION
+| | | |  PARAMETER
+| | | | | (ID="p") TYPE:57e38770 KIND:PARM SPEC=NULL LEV=1 VAL=0 ADDR=12 
+ | | | | | |  TYPE
+| | | | | | | POINTER
+| | | | | | | |  ELEMENT_TYPE
+| | | | | | | | | (float)
+| | | | | (ID="") TYPE:57e38810 KIND:PARM SPEC=NULL LEV=1 VAL=0 ADDR=16 
+ | | | | | |  TYPE
+| | | | | | | POINTER
+| | | | | | | |  ELEMENT_TYPE
+| | | | | | | | | POINTER
+| | | | | | | | | |  ELEMENT_TYPE
+| | | | | | | | | | | (int)
+| | | |  TYPE
+| | | | | (int)
+| (ID="arr") TYPE:57e38970 KIND:VAR SPEC=AUTO LEV=0 VAL=0 ADDR=12 
+ | |  TYPE
+| | | ARRAY
+| | | |  INDEX
+| | | | | INT=10
+| | | |  ELEMENT_TYPE
+| | | | | POINTER
+| | | | | |  ELEMENT_TYPE
+| | | | | | | FUNCTION
+| | | | | | | |  PARAMETER
+| | | | | | | | | (ID="") TYPE:57e389e0 KIND:PARM SPEC=NULL LEV=1 VAL=0 ADDR=12 
+ | | | | | | | | | |  TYPE
+| | | | | | | | | | | POINTER
+| | | | | | | | | | | |  ELEMENT_TYPE
+| | | | | | | | | | | | | (int)
+| | | | | | | | | (ID="") TYPE:0 KIND:PARM SPEC=NULL LEV=1 VAL=0 ADDR=0 
+ | | | | | | | |  TYPE
+| | | | | | | | | (float)
