@@ -1,15 +1,38 @@
 // A3 Yacc Specification: parse.y
 %{
 #include "type.h"
+#include "syntax.h"
+#include <stdio.h>
 #define YYDEBUG 1
 extern int line_no, syntax_err;
+extern void yyerror(char *);
+extern int yylex();
 extern A_NODE *root;
 extern A_ID *current_id;
 extern int current_level;
 extern A_TYPE *int_type;
 %}
+
+%token IDENTIFIER TYPE_IDENTIFIER FLOAT_CONSTANT INTEGER_CONSTANT CHARACTER_CONSTANT STRING_LITERAL PLUS MINUS PLUSPLUS MINUSMINUS BAR AMP BARBAR AMPAMP ARROW SEMICOLON LSS GTR LEQ GEQ EQL NEQ DOTDOTDOT LP RP LB RB LR RR PERIOD COMMA EXCL STAR SLASH PERCENT ASSIGN COLON AUTO_SYM STATIC_SYM TYPEDEF_SYM STRUCT_SYM ENUM_SYM SIZEOF_SYM UNION_SYM IF_SYM ELSE_SYM WHILE_SYM DO_SYM FOR_SYM CONTINUE_SYM BREAK_SYM RETURN_SYM SWITCH_SYM CASE_SYM DEFAULT_SYM 
+%union {
+    A_NODE * a_node;
+    A_ID * a_id;
+    A_SPECIFIER * a_specifier;
+    S_KIND s_kind;
+    A_TYPE * a_type;
+    T_KIND t_kind;
+    char * chr;
+    int itv;
+}
+
+%type <a_node> program initializer initializer_list statement_list_opt statement_list statement labeled_statement compound_statement expression_statement selection_statement iteration_statement for_expression expression_opt jump_statement arg_expression_list_opt arg_expression_list constant_expression_opt constant_expression expression comma_expression assignment_expression conditional_expression logical_or_expression logical_and_expression bitwise_or_expression bitwise_xor_expression bitwise_and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression
+%type <a_id> translation_unit external_declaration function_definition declaration_list_opt declaration_list declaration init_declarator_list_opt init_declarator_list init_declarator struct_declaration_list struct_declaration struct_declarator_list struct_declarator enumerator_list enumerator declarator direct_declarator parameter_type_list_opt parameter_type_list parameter_list parameter_declaration
+%type <a_specifier> declaration_specifiers 
+%type <s_kind> storage_class_specifier
+%type <a_type> type_specifier struct_type_specifier enum_type_specifier pointer abstract_declarator_opt abstract_declarator direct_abstract_declarator type_name
+%type <t_kind> struct_or_union
+
 %start program
-%token IDENTIFIER TYPE_IDENTIFIER FLOAT_CONSTANT INTEGER_CONSTANT CHARACTER_CONSTANT STRING_LITERAL PLUS MINUS PLUSPLUS MINUSMINUS BAR AMP BARBAR AMPAMP ARROW SEMICOLON LSS GTR LEQ GEQ EQL NEQ DOTDOTDOT LP RP LB RB LR RR PERIOD COMMA EXCL STAR SLASH PERCENT ASSIGN COLON AUTO_SYM STATIC_SYM TYPEDEF_SYM STRUCT_SYM ENUM_SYM SIZEOF_SYM UNION_SYM IF_SYM ELSE_SYM WHILE_SYM DO_SYM FOR_SYM CONTINUE_SYM BREAK_SYM RETURN_SYM SWITCH_SYM CASE_SYM DEFAULT_SYM
 
 %%
 
@@ -33,8 +56,8 @@ external_declaration
     ;
 
 function_definition
-    : declaration_specifiers declarator {$$=setFunctionDeclaratorSpecifier($2,$1);} compound_statement {$$=setFunctionDeclaratorBody($3,$4);current_id=$2;}
-    | declarator {$$=setFunctionDeclaratorSpecifier($1,makeSpecifier(int_type,0));} compound_statement {$$=setFunctionDeclaratorBody($2,$3);current_id=$1;}
+    : declaration_specifiers declarator {$<a_id>$=setFunctionDeclaratorSpecifier($<a_id>2,$<a_specifier>1);} compound_statement {$<a_id>$=setFunctionDeclaratorBody($<a_id>3,$<a_node>4);current_id=$2;}
+    | declarator {$<a_id>$=setFunctionDeclaratorSpecifier($<a_id>1,makeSpecifier(int_type,0));} compound_statement {$<a_id>$=setFunctionDeclaratorBody($<a_id>2,$<a_node>3);current_id=$1;}
     ;
 
 declaration_list_opt
@@ -53,7 +76,8 @@ declaration_list
 
 declaration
     : declaration_specifiers init_declarator_list_opt SEMICOLON
-    {$$=setDeclaratorListSpecifier($2,$1);}
+    /*{printf("declaration _ init_declarator_list_opt : %p\n", $<a_id>2);}*/
+    {$$=setDeclaratorListSpecifier($<a_id>2,$1);}
     ;
 
 declaration_specifiers
@@ -78,14 +102,16 @@ storage_class_specifier
 
 init_declarator_list_opt
     :
-    {$$=makeDummyIdentifier();}
+    {$<a_id>$=makeDummyIdentifier();}
     | init_declarator_list
-    {$$=$1;}
+    {printf("init_declarator_list_opt _init_declartor_list : %p\n" ,$1);}
+    /*{$$=$1;}*/
     ;
 
 init_declarator_list
     : init_declarator
-    {$$=$1;}
+    {printf("init_declarator_list _ init_declarator : %p\n", $1);}
+    /*{$$=$1;}*/
     | init_declarator_list COMMA init_declarator
     {$$=linkDeclaratorList($1,$3);}
     ;
@@ -113,21 +139,21 @@ initializer_list
 type_specifier
     : struct_type_specifier {$$ = $1;}
     | enum_type_specifier {$$ = $1;}
-    | TYPE_IDENTIFIER {$$ = $1;}
+    | TYPE_IDENTIFIER {$$ = $<a_type>1;}
     ;
 
 struct_type_specifier
     : struct_or_union IDENTIFIER
-    {$$=setTypeStructOrEnumIdentifier($1,$2,ID_STRUCT);}
-    LR { $$=current_id;current_level++;} struct_declaration_list RR
-    {checkForwardReference();$$=setTypeField($3,$6);current_level--;
-    current_id=$5;}
-    | struct_or_union {$$=makeType($1);} LR {$$=current_id;current_level++;}
+    {$<a_type>$=setTypeStructOrEnumIdentifier($<t_kind>1,$<chr>2,ID_STRUCT);}
+    LR { $<a_id>$=current_id;current_level++;} struct_declaration_list RR
+    {checkForwardReference();$$=setTypeField($<a_type>3,$<a_id>6);current_level--;
+    current_id=$<a_id>5;}
+    | struct_or_union {$<a_type>$=makeType($1);} LR {$<a_id>$=current_id;current_level++;}
     struct_declaration_list RR
-    {checkForwardReference();$$=setTypeField($2,$5);
-    current_level--;current_id=$4;}
+    {checkForwardReference();$$=setTypeField($<a_type>2,$<a_id>5);
+    current_level--;current_id=$<a_id>4;}
     | struct_or_union IDENTIFIER
-    {$$=getTypeOfStructOrEnumRefIdentifier($1,$2,ID_STRUCT);}
+    {$$=getTypeOfStructOrEnumRefIdentifier($<t_kind>1,$<chr>2,ID_STRUCT);}
     ;
 
 struct_or_union
@@ -163,15 +189,15 @@ struct_declarator
 
 enum_type_specifier
     : ENUM_SYM IDENTIFIER
-    {$$=setTypeStructOrEnumIdentifier(T_ENUM,$2,ID_ENUM);}
+    {$<a_type>$=setTypeStructOrEnumIdentifier(T_ENUM,$<chr>2,ID_ENUM);}
     LR enumerator_list RR
-    {$$=setTypeField($3,$5);}
+    {$$=setTypeField($<a_type>3,$<a_id>5);}
     | ENUM_SYM
-    {$$=makeType(T_ENUM);}
+    {$<a_type>$=makeType(T_ENUM);}
     LR enumerator_list RR 
-    {$$=setTypeField($2,$4);}
+    {$$=setTypeField($<a_type>2,$<a_id>4);}
     | ENUM_SYM IDENTIFIER
-    {$$=getTypeOfStructOrEnumRefIdentifier(T_ENUM,$2,ID_ENUM);}
+    {$$=getTypeOfStructOrEnumRefIdentifier(T_ENUM,$<chr>2,ID_ENUM);}
     ;
 
 enumerator_list
@@ -183,17 +209,17 @@ enumerator_list
 
 enumerator
     : IDENTIFIER
-    {$$=setDeclaratorKind(makeIdentifier($1),ID_ENUM_LITERAL);}
+    {$<a_id>$=setDeclaratorKind(makeIdentifier($<chr>1),ID_ENUM_LITERAL); }
     | IDENTIFIER
-    {$$=setDeclaratorKind(makeIdentifier($1),ID_ENUM_LITERAL);}
-    ASSIGN expression {$$=setDeclaratorInit($2,$4);}
+    {$<a_id>$=setDeclaratorKind(makeIdentifier($<chr>1),ID_ENUM_LITERAL);}
+    ASSIGN expression {$<a_id>$=setDeclaratorInit($<a_id>2,$<a_node>4);}
     ;
 
 declarator
     : pointer direct_declarator
     {$$=setDeclaratorElementType($2,$1);}
     | direct_declarator
-    {$$=$1;}
+    {$<a_id>$=$<a_id>1; printf("declarator _ direct %p\n", $<a_id>1);}
     ;
 
 pointer
@@ -205,14 +231,15 @@ pointer
 
 direct_declarator
     : IDENTIFIER
-    {$$=makeIdentifier($1);}
+    {$<a_id>$=makeIdentifier($<chr>1); printf("direct_ identifier %p\n", $$);}
+    /*{$<a_id>$=makeIdentifier($<chr>1); printf("hello");}*/
     | LP declarator RP
     {$$=$2;}
     | direct_declarator LB constant_expression_opt RB
     {$$=setDeclaratorElementType($1,setTypeExpr(makeType(T_ARRAY),$3));}
-    | direct_declarator LP {$$=current_id;current_level++;}
+    | direct_declarator LP {$<a_id>$=current_id;current_level++;}
     parameter_type_list_opt RP
-    {checkForwardReference();current_id=$3;current_level--;
+    {checkForwardReference();current_id=$<a_id>3;current_level--;
     $$=setDeclaratorElementType($1,setTypeField(makeType(T_FUNC),$4));}
     ;
 
@@ -312,11 +339,11 @@ labeled_statement
 
 compound_statement
     : LR 
-    {$$=current_id;current_level++;} 
+    {$<a_id>$=current_id;current_level++;} 
     declaration_list_opt
     statement_list_opt RR 
     {checkForwardReference();
-    $$=makeNode(N_STMT_COMPOUND,$3,NIL,$4); current_id=$2;
+    $$=makeNode(N_STMT_COMPOUND,$3,NIL,$4); current_id=$<a_id>2;
     current_level--;}
     ;
 
@@ -529,9 +556,9 @@ postfix_expression
     | postfix_expression LP arg_expression_list_opt RP
     {$$=makeNode(N_EXP_FUNCTION_CALL,$1,NIL,$3);}
     | postfix_expression PERIOD IDENTIFIER
-    {$$=makeNode(N_EXP_STRUCT,$1,NIL,$3);}
+    {$$=makeNode(N_EXP_STRUCT,$1,NIL,$<a_node>3);}
     | postfix_expression ARROW IDENTIFIER
-    {$$=makeNode(N_EXP_ARROW,$1,NIL,$3);}
+    {$$=makeNode(N_EXP_ARROW,$1,NIL,$<a_node>3);}
     | postfix_expression PLUSPLUS
     {$$=makeNode(N_EXP_POST_INC,NIL,$1,NIL);}
     | postfix_expression MINUSMINUS
@@ -540,15 +567,15 @@ postfix_expression
 
 primary_expression
     : IDENTIFIER
-    {$$=makeNode(N_EXP_IDENT,NIL,getIdentifierDeclared($1),NIL);}
+    {$$=makeNode(N_EXP_IDENT,NIL,getIdentifierDeclared($<chr>1),NIL);}
     | INTEGER_CONSTANT
-    {$$=makeNode(N_EXP_INT_CONST,NIL,$1,NIL);}
+    {$$=makeNode(N_EXP_INT_CONST,NIL,$<a_node>1,NIL);}
     | FLOAT_CONSTANT
-    {$$=makeNode(N_EXP_FLOAT_CONST,NIL,$1,NIL);}
+    {$$=makeNode(N_EXP_FLOAT_CONST,NIL,$<a_node>1,NIL);}
     | CHARACTER_CONSTANT
-    {$$=makeNode(N_EXP_CHAR_CONST,NIL,$1,NIL);}
+    {$$=makeNode(N_EXP_CHAR_CONST,NIL,$<a_node>1,NIL);}
     | STRING_LITERAL 
-    {$$=makeNode(N_EXP_STRING_LITERAL,NIL,$1,NIL);}
+    {$$=makeNode(N_EXP_STRING_LITERAL,NIL,$<a_node>1,NIL);}
     | LP expression RP
     {$$=$2;}
     ;
@@ -561,7 +588,7 @@ type_name
 %%
 
 extern char *yytext;
-yyerror(char *s)
+void yyerror(char *s)
 {
     syntax_err++;
     printf("line %d: %s near %s \n", line_no, s,yytext);

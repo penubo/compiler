@@ -7,9 +7,8 @@ line        [\n]
 ws          {delim}+
 
 %{
-#include "y.tab.h"
 #include "type.h"
-extern int yylval;
+#include "parse.tab.h"
 extern int line_no;
 extern A_ID *current_id;
 char *makeString();
@@ -68,14 +67,15 @@ while               { return(WHILE_SYM); }
 "\-"                { return(MINUS); }
 "\="                { return(ASSIGN); }
 
-{digit}+                        { yylval=atoi(yytext); return(INTEGER_CONSTANT); }
-{digit}+\.{digit}+              { yylval=makeString(yytext); return(FLOAT_CONSTANT); }
+{digit}+                        { yylval.itv=atoi(yytext); return(INTEGER_CONSTANT); }
+{digit}+\.{digit}+              { yylval.chr=makeString(yytext); return(FLOAT_CONSTANT); }
 {letter}({letter}|{digit})*     { return(checkIdentifier(yytext)); }
-\"([^"\n]|\\["\n])*\"           { yylval=makeString(yytext); return(STRING_LITERAL); }
-\'([^'\n]|\'\')\'               { yylval=*(yytext+1); return(CHARACTER_CONSTANT); }
+\"([^"\n]|\\["\n])*\"           { yylval.chr=makeString(yytext); return(STRING_LITERAL); }
+\'([^'\n]|\'\')\'               { yylval.chr=*(yytext+1); return(CHARACTER_CONSTANT); }
 "//"[^\n]*                      { }
 
 %%
+
 
 int yywrap(void) {
     return 1;
@@ -98,13 +98,13 @@ int checkIdentifier(char *s) {
         id = id->prev;
     }
     if (id == NULL) {
-        yylval = makeString(s);
+        yylval.chr = makeString(s);
         return (IDENTIFIER);
     } else if (id->kind == ID_TYPE) {
-        yylval = id->type;
+        yylval.a_type = id->type;
         return (TYPE_IDENTIFIER);
     } else {
-        yylval = id->name;
+        yylval.chr = id->name;
         return (IDENTIFIER);
     }
 // // // // //
