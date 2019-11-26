@@ -1,6 +1,7 @@
 #include "type.h"
 
-
+#ifndef __SYNTAX_H_
+#define __SYNTAX_H_
 
 A_NODE*makeNode (NODE_NAME,A_NODE *,A_NODE *,A_NODE *); 
 A_NODE*makeNodeList (NODE_NAME,A_NODE *,A_NODE *);
@@ -38,3 +39,6 @@ BOOLEAN isPointerOrArrayType(A_TYPE *);
 void syntax_error();
 void initialize();
 BOOLEAN isPointerOrArrayType(A_TYPE *t);
+
+
+#endif

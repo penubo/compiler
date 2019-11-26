@@ -12,7 +12,7 @@ extern FILE *yyin;
 void initialize();
 void print_ast();
 
-void main(int argc, char *argv[]) 
+int main(int argc, char *argv[]) 
 {
     if (argc < 2) {
         printf("source file not given\n");

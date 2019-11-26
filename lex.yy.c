@@ -2112,7 +2112,6 @@ char *makeString(char *s) {
     char *t; 
     t=malloc(strlen(s)+1); 
     strcpy(t,s);
-    // if(MYDEBUG) t[strlen(s)] = '\0';
     return(t);
 }
 
