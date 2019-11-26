@@ -186,22 +186,27 @@ void setDefaultSpecifier(A_SPECIFIER *p)
 A_SPECIFIER *updateSpecifier(A_SPECIFIER *p, A_TYPE *t, S_KIND s)
 {
     // TODO: how to get long long in here. I think it will arise error
-    if (t)
-        if (p->type)
-            if (p->type == t) 
+    if (t) {
+        if (p->type) {
+            if (p->type == t) {
                 ;
-            else
+            } else {
                 syntax_error(24, NULL);
-        else
+            }
+        } else {
             p->type = t;
+        }
+    }
     if (s) {
-        if (p->stor)
-            if (s == p->stor)
+        if (p->stor) {
+            if (s == p->stor) {
                 ;
-            else
+            } else {
                 syntax_error(24, NULL);
-        else
+            }
+        } else {
             p->stor = s;
+        }
     }
     return (p);
 }
@@ -485,12 +490,15 @@ A_TYPE *setTypeStructOrEnumIdentifier(T_KIND k, char *s, ID_KIND kk)
 
     // check redeclaration or forward declaration 
     a=searchIdentifierAtCurrentLevel(s,current_id);
-    if (a)
-        if (a->kind == kk && a->type->kind == k)
-            if (a->type->field)
+    if (a) {
+        if (a->kind == kk && a->type->kind == k) {
+            if (a->type->field) {
                 syntax_error(12, s);
-            else
+            } else {
                 return (a->type);
+            }
+        }
+    }
     // make a new struct (or enum) identifier
     id = makeIdentifier(s);
     t = makeType(k);

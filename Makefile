@@ -1,4 +1,4 @@
-# ©2016 YUICHIRO NAKADA
+# ©2019 YONGJOON KIM
 
 CC = gcc
 CFLAGS = -Wall -Os
@@ -7,7 +7,7 @@ LEX = flex
 YACC = bison -d
 
 PROGRAM = compiler
-OBJS = parse.tab.c syntax.o print.o semantic.o print_sem.o lex.yy.c main.o
+OBJS = parse.tab.c lex.yy.c syntax.o print.o semantic.o print_sem.o main.o
 
 .SUFFIXES: .c .o
 
@@ -23,14 +23,11 @@ lex.yy.c: scan.l type.h parse.tab.h parse.y
 parse.tab.c: parse.y syntax.h
 	$(YACC) parse.y
 	
-#y.tab.o: cparser.y
 main.o : type.h
 
 print.o : type.h
 
 print_sem.o : type.h
-
-sem_print.o : sem_print.c
 
 semantic.o : type.h
 

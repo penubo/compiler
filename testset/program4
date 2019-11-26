@@ -1,3 +1,4 @@
-int fun (float *p, int *[]);
+int fun (float *, int *[]);
 
 float (*arr[10]) (int *, ...);
+

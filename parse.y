@@ -27,10 +27,11 @@ extern A_TYPE *int_type;
 
 %type <a_node> program initializer initializer_list statement_list_opt statement_list statement labeled_statement compound_statement expression_statement selection_statement iteration_statement for_expression expression_opt jump_statement arg_expression_list_opt arg_expression_list constant_expression_opt constant_expression expression comma_expression assignment_expression conditional_expression logical_or_expression logical_and_expression bitwise_or_expression bitwise_xor_expression bitwise_and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression
 %type <a_id> translation_unit external_declaration function_definition declaration_list_opt declaration_list declaration init_declarator_list_opt init_declarator_list init_declarator struct_declaration_list struct_declaration struct_declarator_list struct_declarator enumerator_list enumerator declarator direct_declarator parameter_type_list_opt parameter_type_list parameter_list parameter_declaration
-%type <a_specifier> declaration_specifiers 
-%type <s_kind> storage_class_specifier
 %type <a_type> type_specifier struct_type_specifier enum_type_specifier pointer abstract_declarator_opt abstract_declarator direct_abstract_declarator type_name
+%type <a_specifier> declaration_specifiers 
 %type <t_kind> struct_or_union
+%type <s_kind> storage_class_specifier
+
 
 %start program
 
@@ -104,14 +105,14 @@ init_declarator_list_opt
     :
     {$<a_id>$=makeDummyIdentifier();}
     | init_declarator_list
-    {printf("init_declarator_list_opt _init_declartor_list : %p\n" ,$1);}
-    /*{$$=$1;}*/
+    {$$=$1;}
+    /* {printf("init_declarator_list_opt _init_declartor_list : %p\n" ,$1);} */
     ;
 
 init_declarator_list
     : init_declarator
-    {printf("init_declarator_list _ init_declarator : %p\n", $1);}
-    /*{$$=$1;}*/
+    {$$=$1;}
+    /* {printf("init_declarator_list _ init_declarator : %p\n", $1);} */
     | init_declarator_list COMMA init_declarator
     {$$=linkDeclaratorList($1,$3);}
     ;
@@ -219,7 +220,8 @@ declarator
     : pointer direct_declarator
     {$$=setDeclaratorElementType($2,$1);}
     | direct_declarator
-    {$<a_id>$=$<a_id>1; printf("declarator _ direct %p\n", $<a_id>1);}
+    {$$=$1;}
+    /* {$<a_id>$=$<a_id>1; printf("declarator _ direct %p\n", $<a_id>1);} */
     ;
 
 pointer
@@ -231,8 +233,9 @@ pointer
 
 direct_declarator
     : IDENTIFIER
-    {$<a_id>$=makeIdentifier($<chr>1); printf("direct_ identifier %p\n", $$);}
-    /*{$<a_id>$=makeIdentifier($<chr>1); printf("hello");}*/
+    {$$=makeIdentifier($<chr>1);}
+    /* {$<a_id>$=makeIdentifier($<chr>1); printf("direct_ identifier %p\n", $$);} */
+    /* {$<a_id>$=makeIdentifier($<chr>1); printf("hello");} */
     | LP declarator RP
     {$$=$2;}
     | direct_declarator LB constant_expression_opt RB
@@ -297,6 +300,7 @@ direct_abstract_declarator
     {$$=setTypeElementType($1,setTypeExpr(makeType(T_ARRAY),$3));}
     | LP parameter_type_list_opt RP
     {$$=setTypeExpr(makeType(T_FUNC),$2);}
+    /* TODO: parameter_type_list_opt is A_ID but using as a A_TYPE here */
     | direct_abstract_declarator LP parameter_type_list_opt RP
     {$$=setTypeElementType($1,setTypeExpr(makeType(T_FUNC),$3));}
     ;
