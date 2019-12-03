@@ -533,7 +533,7 @@ char *yytext;
 #line 1 "scan.l"
 /* A2 Lex Specification: scan.l */
 #line 10 "scan.l"
-#include "y.tab.h"
+#include "parse.tab.h"
 #include "type.h"
 extern int yylval;
 extern int line_no;
@@ -2149,3 +2149,4 @@ int checkIdentifier(char *s) {
 // 이름의 종류가 typedef 로 정의한 이름인 경우는 TYPE_IDENTIFIER 로 결정, yylval 은 그 타입 포인터
 // 아닌 경우는 IDENTIFIER 로 결정, yylval 은 그 이름 스트링 포인터
 }
+

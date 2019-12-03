@@ -1,0 +1,15 @@
+int main() {
+
+	int x;
+
+	switch(x) {
+		case 'a':
+		case 12:
+		default:
+		break;
+	}
+
+
+
+	return 0;
+}

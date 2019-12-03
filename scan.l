@@ -7,7 +7,7 @@ line        [\n]
 ws          {delim}+
 
 %{
-#include "y.tab.h"
+#include "parse.tab.h"
 #include "type.h"
 extern int yylval;
 extern int line_no;

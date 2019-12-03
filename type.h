@@ -1,4 +1,6 @@
 // A1 Header File ‘type.h’
+#ifndef __TYPE_H_
+#define __TYPE_H_
 
 #define NIL 0
 
@@ -167,3 +169,5 @@ typedef struct
     S_KIND stor;
     int line;
 } A_SPECIFIER;
+
+#endif

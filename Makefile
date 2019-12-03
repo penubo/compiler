@@ -1,34 +1,39 @@
+# ©2019 YONGJOON KIM
 
-TARGETS := compiler 
+CC = gcc
+CFLAGS = -Wall -Os
+CFLAGS = -g
+LDFLAGS = -m32
+LEX = flex
+YACC = bison -d
 
-COMPILER_OBJS := compiler.o
+PROGRAM = compiler
+OBJS = parse.tab.c lex.yy.c syntax.o print.o semantic.o print_sem.o main.o
 
+.SUFFIXES: .c .o
 
-OBJS := $(COMPILER_OBJS) 
+$(PROGRAM): $(OBJS)
+	$(CC) $(LDFLAGS) -o $(PROGRAM) $^
 
-CC := gcc
+.c.o:
+	$(CC) $(CFLAGS) -c $<
 
-CFLAGS += -D_REENTRANT -D_LIBC_REENTRANT -D_THREAD_SAFE
-CFLAGS += -Wall
-CFLAGS += -Wunused
-CFLAGS += -Wshadow
-CFLAGS += -Wdeclaration-after-statement
-CFLAGS += -Wdisabled-optimization
-CFLAGS += -Wpointer-arith
-CFLAGS += -Wredundant-decls
-CFLAGS += -g -O2
+lex.yy.c: scan.l type.h parse.tab.h parse.y
+	$(LEX) scan.l
+	
+parse.tab.c: parse.y syntax.h
+	$(YACC) parse.y
+	
+main.o : type.h
 
-LDFLAGS += -m32
+print.o : type.h
 
-%.o: %.c
-	$(CC) -o $*.o $< -c $(CFLAGS)
+print_sem.o : type.h
 
-.PHONY: all clean test
+semantic.o : type.h
 
-all: $(TARGETS)
+syntax.o : syntax.h parse.tab.h
 
-compiler: $(COMPILER_OBJS)
-	$(CC) -o $@ y.tab.c lex.yy.c main.c syntax.c print.c $^ $(LDFLAGS)
-
-task: $(TASK_OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+.PHONY: clean
+clean:
+	$(RM) $(PROGRAM) $(OBJS)

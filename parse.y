@@ -1,6 +1,7 @@
 // A3 Yacc Specification: parse.y
 %{
 #include "type.h"
+#include "syntax.h"
 #define YYDEBUG 1
 extern int line_no, syntax_err;
 extern A_NODE *root;
