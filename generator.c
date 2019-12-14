@@ -57,15 +57,24 @@ void gen_literal_table()
 {
 	int i;
 	for (i=1;i<=literal_no; i++) {
-		fprintf(fout,".literal %5d  ",literal_table[i].addr);
-		if (literal_table[i].type==int_type)
-			fprintf(fout,"%d\n",literal_table[i].value.i);
-		else if (literal_table[i].type==float_type)
-			fprintf(fout,"%f\n",literal_table[i].value.f);
-		else if (literal_table[i].type==char_type)
-			fprintf(fout,"%d\n",literal_table[i].value.c);
-		else if (literal_table[i].type==string_type)
-			fprintf(fout,"%s\n",literal_table[i].value.s);
+		//fprintf(fout,".literal %5d  ",literal_table[i].addr);
+		fprintf(stdout,".literal %5d  ",literal_table[i].addr);
+		if (literal_table[i].type==int_type) {
+			// fprintf(fout,"%d\n",literal_table[i].value.i);
+			fprintf(stdout,"%d\n",literal_table[i].value.i);
+		}
+		else if (literal_table[i].type==float_type) {
+			// fprintf(fout,"%f\n",literal_table[i].value.f);
+			fprintf(stdout,"%f\n",literal_table[i].value.f);
+		}
+		else if (literal_table[i].type==char_type) {
+			// fprintf(fout,"%d\n",literal_table[i].value.c);
+			fprintf(stdout,"%d\n",literal_table[i].value.c);
+		}
+		else if (literal_table[i].type==string_type) {
+			// fprintf(fout,"%s\n",literal_table[i].value.s);
+			fprintf(stdout,"%s\n",literal_table[i].value.s);
+		}
 	}
 }
 void gen_program(A_NODE *node)
@@ -882,24 +891,29 @@ void gen_error(int i, int ll, char *s )
 }
 void gen_code_i(OPCODE op,  int l, int a)
 {
-	fprintf(fout,"\t%9s   %d, %d\n",opcode_name[op],l,a);
+	// fprintf(fout,"\t%9s   %d, %d\n",opcode_name[op],l,a);
+	fprintf(stdout,"\t%9s   %d, %d\n",opcode_name[op],l,a);
 }
 
 void gen_code_s(OPCODE op,  int l, char *a)
 {
-	fprintf(fout,"\t%9s   %d, %s\n",opcode_name[op],l,a);
+	// fprintf(fout,"\t%9s   %d, %s\n",opcode_name[op],l,a);
+	fprintf(stdout,"\t%9s   %d, %s\n",opcode_name[op],l,a);
 }
 void gen_code_l(OPCODE op,  int l, int a)
 {
-	fprintf(fout,"\t%9s   %d, L%d\n",opcode_name[op],l,a);
+	//fprintf(fout,"\t%9s   %d, L%d\n",opcode_name[op],l,a);
+	fprintf(stdout,"\t%9s   %d, L%d\n",opcode_name[op],l,a);
 }
 void gen_label_number(int i)
 {
-	fprintf(fout,"L%d:\n",i);
+	//fprintf(fout,"L%d:\n",i);
+	fprintf(stdout,"L%d:\n",i);
 	
 }
 void gen_label_name(char *s)
 {
-	fprintf(fout,"%s:\n",s);
-	
+	//fprintf(fout,"%s:\n",s);
+	fprintf(stdout,"%s:\n",s);
+
 }

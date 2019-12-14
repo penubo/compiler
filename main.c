@@ -30,5 +30,6 @@ void main(int argc, char *argv[])
     print_ast(root);
     semantic_analysis(root);
     print_sem_ast(root); 
+    code_generation(root);
     exit(0);
 }

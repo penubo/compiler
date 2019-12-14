@@ -8,7 +8,7 @@ LEX = flex
 YACC = bison -d
 
 PROGRAM = compiler
-OBJS = parse.tab.c lex.yy.c syntax.c print.o semantic.o print_sem.o main.c
+OBJS = parse.tab.c lex.yy.c syntax.c print.o semantic.o print_sem.o main.c generator.c
 
 .SUFFIXES: .c .o
 
