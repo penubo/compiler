@@ -1,3 +1,10 @@
-int func();
-int **ptr;
-int (*kim) [10];
+int fun(int a) {
+
+	return 0;
+}
+int main() {
+
+	fun(2);
+
+	return 0;
+}
