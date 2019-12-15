@@ -8,6 +8,7 @@
 extern int syntax_err; 
 extern A_NODE *root; 
 extern FILE *yyin; 
+FILE *fout;
 
 void initialize();
 void print_ast();
@@ -22,6 +23,13 @@ void main(int argc, char *argv[])
         printf("can not open input file: %s\n",argv[argc-1]);
         exit(1);
     } 
+
+    char name[255];
+    strcpy(name, "./interpreter/testprogram/");
+    strcat(name, argv[1]);
+
+    fout = fopen(name, "w+");
+
     printf("\nstart syntax analysis\n");
     initialize();
     yyparse();
