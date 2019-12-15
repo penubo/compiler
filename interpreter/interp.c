@@ -114,13 +114,16 @@ void interp()
             stack[t] = stack[stack[t - 1] / 4];
             break;
         case LDXB:
-            stack[++t] = *(stack_c + stack[t - 1]);
+            t++;
+            stack[t] = *(stack_c + stack[t - 1]);
             break;
         case LDA:
-            stack[++t] = base(i.l) * 4 + i.a;
+            t++;
+            stack[t] = base(i.l) * 4 + i.a;
             break;
         case LITI:
-            stack[++t] = i.a;
+            t++;
+            stack[t] = i.a;
             break;
         case STO:
             t = t - 2;
