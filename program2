@@ -1,7 +1,7 @@
-struct node {
-	char name;
-	int value;
-	struct node *link;
-} kim;
+void main() {
+	int i;
 
-struct node lee;
+	for (i = 0; i < 10; i++) {
+		printf("%d ", i);
+	}
+}

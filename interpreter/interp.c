@@ -1,4 +1,6 @@
 #include "type.h"
+#include <stdio.h>
+#include <stdlib.h>
 extern char *opcode_name[];
 extern INSTRUCTION code[];
 extern int stack[];
@@ -17,6 +19,18 @@ int p = 0,          // program counter
     b = 0,          // base register
     t = -1,         // stack top register
     hp = STACK_MAX; // heap pointer register
+
+void print_stack() {
+    printf("base : %d\n", b);
+    printf("pc: %d\n", p);
+    printf("top : %d\n", t);
+    printf("opcode : %d\n", code[t].f);
+    printf("\n===============print stack start===========\n");
+    for (int i = 0; i < 20; i++) {
+        printf("%d %10d\n", i, stack[i]);
+    }
+    printf("\n===============print stack done===========\n");
+}
 
 void dump_stack()
 {
@@ -96,7 +110,8 @@ void interp()
             stack[t] = *(stack_c + stack[t]);
             break;
         case LDX:
-            stack[++t] = stack[stack[t - 1] / 4];
+            t++;
+            stack[t] = stack[stack[t - 1] / 4];
             break;
         case LDXB:
             stack[++t] = *(stack_c + stack[t - 1]);
@@ -343,6 +358,7 @@ void interp()
             runtime_error(100, p);
             break;
         }
+        //print_stack();
     } while (p);
 
     printf("end execution\n");

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 extern float *stack_f;
 extern char *stack_c;
 extern int stack[];
@@ -65,10 +66,10 @@ void lib_printf()
                 printf("%s", ss);
                 break;
             case 0:
-                printf("\%");
+                printf("%%");
                 return;
             default:
-                printf("\%%c", c);
+                printf("%%%c", c);
                 break;
             }
         }
@@ -128,7 +129,7 @@ void lib_scanf()
             case 0:
                 return;
             default:
-                printf("\%%c", c);
+                printf("%%%c", c);
                 break;
             }
         }
