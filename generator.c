@@ -108,6 +108,9 @@ void gen_error();
 int get_label();
 int label_no = 0;
 int gen_err = 0;
+int global_init_l1;
+int global_init_l2;
+int global_init_l2_jumb = 0;
 extern FILE *fout;
 extern A_TYPE *int_type, *float_type, *char_type, *void_type, *string_type;
 extern A_LITERAL literal_table[];
@@ -152,8 +155,11 @@ void gen_program(A_NODE *node)
 	{
 	case N_PROGRAM:
 		gen_code_i(INT, 0, node->value);
+		gen_code_l(JMP, 0, global_init_l1 = get_label());
+		gen_label_number(global_init_l2 = get_label());
 		gen_code_s(SUP, 0, "main");
 		gen_code_i(RET, 0, 0);
+		gen_label_number(global_init_l1);
 		gen_declaration_list(node->clink);
 		break;
 	default:
@@ -964,6 +970,33 @@ void gen_statement_list(A_NODE *node, int cont_label, int break_label, A_SWITCH 
 // TODO: assignments
 void gen_initializer_global(A_NODE *node, A_TYPE *t, int addr)
 {
+	int i;
+
+	switch (node->name)
+	{
+	case N_INIT_LIST_ONE:
+		gen_expression(node->clink);
+		i = t->size;
+		if (i == 1)
+		{
+			gen_code_i(STXB, 0, 0);
+		}
+		else
+		{
+			gen_code_i(STX, 0, i % 4 ? i / 4 + 1 : i / 4);
+		}
+		gen_code_i(POP, 0, i % 4 ? i / 4 + 1 : i / 4);
+		break;
+	case N_INIT_LIST:
+
+		break;
+	case N_INIT_LIST_NIL:
+
+		break;
+	default:
+		//error
+		break;
+	}
 }
 // id->init, id->type, id->address
 void gen_initializer_local(A_NODE *node, A_TYPE *t, int addr)
@@ -983,6 +1016,7 @@ void gen_initializer_local(A_NODE *node, A_TYPE *t, int addr)
 		{
 			gen_code_i(STX, 0, i % 4 ? i / 4 + 1 : i / 4);
 		}
+		gen_code_i(POP, 0, i % 4 ? i / 4 + 1 : i / 4);
 		break;
 	case N_INIT_LIST:
 
@@ -1014,6 +1048,32 @@ void gen_declaration(A_ID *id)
 		{
 			if (id->level == 0)
 			{
+				A_TYPE *t = id->type;
+				switch (id->kind)
+				{
+				case ID_VAR:
+				case ID_PARM:
+					switch (t->kind)
+					{
+					case T_ENUM:
+					case T_UNION:
+						gen_code_i(LDA, id->level, id->address);
+						break;
+					case T_POINTER:
+						gen_code_i(LOD, id->level, id->address);
+						break;
+					default:
+						gen_error(13, node->line, id->name);
+						break;
+					}
+					break;
+				case ID_FUNC:
+					gen_code_s(ADDR, 0, id->name);
+					break;
+				default:
+					gen_error(13, node->line, id->name);
+					break;
+				}
 				gen_initializer_global(id->init, id->type, id->address);
 			}
 			else
@@ -1026,22 +1086,12 @@ void gen_declaration(A_ID *id)
 					switch (t->kind)
 					{
 					case T_ENUM:
-					case T_POINTER:
-					case T_STRUCT:
 					case T_UNION:
 						gen_code_i(LDA, id->level, id->address);
 						break;
-					case T_ARRAY:
-						if (id->kind == ID_VAR)
-						{
-							gen_code_i(LDA, id->level, id->address);
-						}
-						else
-						{
-							gen_code_i(LOD, id->level, id->address);
-						}
+					case T_POINTER:
+						gen_code_i(LOD, id->level, id->address);
 						break;
-
 					default:
 						gen_error(13, node->line, id->name);
 						break;
@@ -1061,6 +1111,11 @@ void gen_declaration(A_ID *id)
 	case ID_FUNC:
 		if (id->type->expr)
 		{
+			if (!global_init_l2_jumb)
+			{
+				global_init_l2_jumb = 1;
+				gen_code_l(JMP, 0, global_init_l2);
+			}
 			gen_label_name(id->name);
 			gen_code_i(INT, 0, id->type->local_var_size);
 			gen_statement(id->type->expr, 0, 0, 0, 0);

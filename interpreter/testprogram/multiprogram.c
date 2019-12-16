@@ -1,26 +1,30 @@
 	      INT   0, 28
+	      JMP   0, L1
+L2:
 	      SUP   0, main
 	      RET   0, 0
+L1:
+	      JMP   0, L2
 multiply:
 	      INT   0, 24
 	      LDA   1, 20
 	     LITI   0, 0
 	      STX   0, 1
 	      POP   0, 1
-L2:
+L4:
 	      LOD   1, 12
-	      JPC   0, L3
+	      JPC   0, L5
 	      LOD   1, 12
 	     LITI   0, 2
 	      MOD   0, 0
-	      JPC   0, L4
+	      JPC   0, L6
 	      LDA   1, 20
 	      LOD   1, 20
 	      LOD   1, 16
 	     ADDI   0, 0
 	      STX   0, 1
 	      POP   0, 1
-L4:
+L6:
 	      LDA   1, 12
 	      LOD   1, 12
 	     LITI   0, 2
@@ -33,9 +37,9 @@ L4:
 	     MULI   0, 0
 	      STX   0, 1
 	      POP   0, 1
-L1:
-	      JMP   0, L2
 L3:
+	      JMP   0, L4
+L5:
 	      LDA   1, -4
 	      LOD   1, 20
 	      STO   0, 1

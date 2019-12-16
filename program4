@@ -1,0 +1,8 @@
+int j = 10;
+int main() {
+
+	int i = j + 10;
+	printf("local i : %d ", i);
+	printf("global j :%d ", j);
+
+}

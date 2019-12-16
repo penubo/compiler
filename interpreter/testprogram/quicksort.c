@@ -1,6 +1,10 @@
 	      INT   0, 124
+	      JMP   0, L1
+L2:
 	      SUP   0, main
 	      RET   0, 0
+L1:
+	      JMP   0, L2
 sort:
 	      INT   0, 40
 	      LDA   1, 20
@@ -24,8 +28,8 @@ sort:
 	      LDI   0, 1
 	      STX   0, 1
 	      POP   0, 1
-L3:
 L5:
+L7:
 	      LDA   0, 12
 	      LOD   1, 20
 	     LITI   0, 4
@@ -34,17 +38,17 @@ L5:
 	      LDI   0, 1
 	      LOD   1, 28
 	     LSSI   0, 0
-	      JPC   0, L6
+	      JPC   0, L8
 	      LOD   1, 20
 	      LDA   1, 20
 	      LDX   0, 1
 	     INCI   0, 0
 	      STO   0, 1
 	      POP   0, 1
-L4:
-	      JMP   0, L5
 L6:
+	      JMP   0, L7
 L8:
+L10:
 	      LOD   1, 28
 	      LDA   0, 12
 	      LOD   1, 24
@@ -53,20 +57,20 @@ L8:
 	   OFFSET   0, 0
 	      LDI   0, 1
 	     LSSI   0, 0
-	      JPC   0, L9
+	      JPC   0, L11
 	      LOD   1, 24
 	      LDA   1, 24
 	      LDX   0, 1
 	     DECI   0, 0
 	      STO   0, 1
 	      POP   0, 1
-L7:
-	      JMP   0, L8
 L9:
+	      JMP   0, L10
+L11:
 	      LOD   1, 20
 	      LOD   1, 24
 	     LEQI   0, 0
-	      JPC   0, L10
+	      JPC   0, L12
 	      LDA   1, 32
 	      LDA   0, 12
 	      LOD   1, 20
@@ -109,35 +113,35 @@ L9:
 	     DECI   0, 0
 	      STO   0, 1
 	      POP   0, 1
-L10:
-L2:
+L12:
+L4:
 	      LOD   1, 20
 	      LOD   1, 24
 	     LEQI   0, 0
-	      JPT   0, L3
-L1:
+	      JPT   0, L5
+L3:
 	      LOD   1, 12
 	      LOD   1, 24
 	     LSSI   0, 0
-	      JPC   0, L11
+	      JPC   0, L13
 	      INT   0, 12
 	      LOD   1, 12
 	      LOD   1, 24
 	      POP   0, 5
 	     ADDR   0, sort
 	      CAL   0, 0
-L11:
+L13:
 	      LOD   1, 20
 	      LOD   1, 16
 	     LSSI   0, 0
-	      JPC   0, L12
+	      JPC   0, L14
 	      INT   0, 12
 	      LOD   1, 20
 	      LOD   1, 16
 	      POP   0, 5
 	     ADDR   0, sort
 	      CAL   0, 0
-L12:
+L14:
 	      RET   0, 0
 main:
 	      INT   0, 16
@@ -225,11 +229,11 @@ main:
 	     LITI   0, 0
 	      STX   0, 1
 	      POP   0, 1
-L14:
+L16:
 	      LOD   1, 12
 	     LITI   0, 10
 	     LSSI   0, 0
-	      JPC   0, L15
+	      JPC   0, L17
 	      INT   0, 12
 	      LDA   0, 92
 	      LDA   0, 12
@@ -241,15 +245,15 @@ L14:
 	      POP   0, 5
 	     ADDR   0, printf
 	      CAL   0, 0
-L13:
+L15:
 	      LOD   1, 12
 	      LDA   1, 12
 	      LDX   0, 1
 	     INCI   0, 0
 	      STO   0, 1
 	      POP   0, 1
-	      JMP   0, L14
-L15:
+	      JMP   0, L16
+L17:
 	      INT   0, 12
 	      LDA   0, 100
 	      POP   0, 4
@@ -265,11 +269,11 @@ L15:
 	     LITI   0, 0
 	      STX   0, 1
 	      POP   0, 1
-L17:
+L19:
 	      LOD   1, 12
 	     LITI   0, 10
 	     LSSI   0, 0
-	      JPC   0, L18
+	      JPC   0, L20
 	      INT   0, 12
 	      LDA   0, 108
 	      LDA   0, 12
@@ -281,15 +285,15 @@ L17:
 	      POP   0, 5
 	     ADDR   0, printf
 	      CAL   0, 0
-L16:
+L18:
 	      LOD   1, 12
 	      LDA   1, 12
 	      LDX   0, 1
 	     INCI   0, 0
 	      STO   0, 1
 	      POP   0, 1
-	      JMP   0, L17
-L18:
+	      JMP   0, L19
+L20:
 	      INT   0, 12
 	      LDA   0, 116
 	      POP   0, 4
