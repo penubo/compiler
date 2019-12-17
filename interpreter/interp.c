@@ -114,7 +114,6 @@ void interp()
             stack[t] = stack[stack[t - 1] / 4];
             break;
         case LDXB:
-            t++;
             stack[t] = *(stack_c + stack[t - 1]);
             break;
         case LDA:

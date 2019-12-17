@@ -1048,64 +1048,38 @@ void gen_declaration(A_ID *id)
 	case ID_VAR:
 		if (id->init)
 		{
-			if (id->level == 0)
+			A_TYPE *t = id->type;
+			switch (id->kind)
 			{
-				A_TYPE *t = id->type;
-				switch (id->kind)
+			case ID_VAR:
+			case ID_PARM:
+				switch (t->kind)
 				{
-				case ID_VAR:
-				case ID_PARM:
-					switch (t->kind)
-					{
-					case T_ENUM:
-					case T_UNION:
-						gen_code_i(LDA, id->level, id->address);
-						break;
-					case T_POINTER:
-						gen_code_i(LOD, id->level, id->address);
-						break;
-					default:
-						gen_error(13, node->line, id->name);
-						break;
-					}
+				case T_ENUM:
+				case T_UNION:
+					gen_code_i(LDA, id->level, id->address);
 					break;
-				case ID_FUNC:
-					gen_code_s(ADDR, 0, id->name);
+				case T_POINTER:
+					gen_code_i(LOD, id->level, id->address);
 					break;
 				default:
 					gen_error(13, node->line, id->name);
 					break;
 				}
+				break;
+			case ID_FUNC:
+				gen_code_s(ADDR, 0, id->name);
+				break;
+			default:
+				gen_error(13, node->line, id->name);
+				break;
+			}
+			if (id->level == 0)
+			{
 				gen_initializer_global(id->init, id->type, id->address);
 			}
 			else
 			{
-				A_TYPE *t = id->type;
-				switch (id->kind)
-				{
-				case ID_VAR:
-				case ID_PARM:
-					switch (t->kind)
-					{
-					case T_ENUM:
-					case T_UNION:
-						gen_code_i(LDA, id->level, id->address);
-						break;
-					case T_POINTER:
-						gen_code_i(LOD, id->level, id->address);
-						break;
-					default:
-						gen_error(13, node->line, id->name);
-						break;
-					}
-					break;
-				case ID_FUNC:
-					gen_code_s(ADDR, 0, id->name);
-					break;
-				default:
-					gen_error(13, node->line, id->name);
-					break;
-				}
 				gen_initializer_local(id->init, id->type, id->address);
 			}
 		}
