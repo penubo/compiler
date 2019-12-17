@@ -1149,26 +1149,21 @@ void gen_error(int i, int ll, char *s)
 void gen_code_i(OPCODE op, int l, int a)
 {
 	fprintf(fout, "\t%9s   %d, %d\n", opcode_name[op], l, a);
-	// fprintf(stdout,"\t%9s   %d, %d\n",opcode_name[op],l,a);
 }
 
 void gen_code_s(OPCODE op, int l, char *a)
 {
 	fprintf(fout, "\t%9s   %d, %s\n", opcode_name[op], l, a);
-	// fprintf(stdout,"\t%9s   %d, %s\n",opcode_name[op],l,a);
 }
 void gen_code_l(OPCODE op, int l, int a)
 {
 	fprintf(fout, "\t%9s   %d, L%d\n", opcode_name[op], l, a);
-	// fprintf(stdout,"\t%9s   %d, L%d\n",opcode_name[op],l,a);
 }
 void gen_label_number(int i)
 {
 	fprintf(fout, "L%d:\n", i);
-	// fprintf(stdout,"L%d:\n",i);
 }
 void gen_label_name(char *s)
 {
 	fprintf(fout, "%s:\n", s);
-	// fprintf(stdout,"%s:\n",s);
 }
