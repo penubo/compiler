@@ -1,4 +1,6 @@
 #include "type.h" 
+#include <stdio.h>
+
 extern char *node_name[]; 
 extern char * type_kind_name[]; 
 extern char * id_kind_name[]; 

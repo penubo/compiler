@@ -2811,7 +2811,7 @@ yyreturn:
 
 
 extern char *yytext;
-yyerror(char *s)
+void yyerror(char *s)
 {
     syntax_err++;
     printf("line %d: %s near %s \n", line_no, s,yytext);

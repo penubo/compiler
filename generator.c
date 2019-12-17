@@ -2,6 +2,8 @@
 #include <string.h>
 #include "type.h"
 #include "syntax.h"
+#include "semantic.h"
+
 typedef enum op
 {
 	OP_NULL,
@@ -110,7 +112,7 @@ int label_no = 0;
 int gen_err = 0;
 int global_init_l1;
 int global_init_l2;
-int global_init_l2_jumb = 0;
+int global_init_l2_jump_flag = 0;
 extern FILE *fout;
 extern A_TYPE *int_type, *float_type, *char_type, *void_type, *string_type;
 extern A_LITERAL literal_table[];
@@ -1111,9 +1113,9 @@ void gen_declaration(A_ID *id)
 	case ID_FUNC:
 		if (id->type->expr)
 		{
-			if (!global_init_l2_jumb)
+			if (!global_init_l2_jump_flag)
 			{
-				global_init_l2_jumb = 1;
+				global_init_l2_jump_flag = 1;
 				gen_code_l(JMP, 0, global_init_l2);
 			}
 			gen_label_name(id->name);
